@@ -69,6 +69,12 @@
 			<constructor-arg ref="measurementDAO" />
 		</bean>
 		
+		<!-- Tracking Beans -->
+		
+		<bean id="trackingLoginService" class="package uni.miskolc.ips.ilona.tracking.service.TrackingLoginService">
+			
+		</bean>
+		
 		<!-- 
 		<bean id="measurementManagerService"
 			class="uni.miskolc.ips.ilona.measurement.service.impl.MeasurementManagerServiceImpl">

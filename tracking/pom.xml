@@ -42,6 +42,6 @@
 		<module>tracking-service</module>
 		<module>tracking-service-impl</module>
 		<module>tracking-util</module>
-    <module>measurement-controller</module>
-  </modules>
+    	<module>measurement-controller</module>
+	</modules>
 </project>
