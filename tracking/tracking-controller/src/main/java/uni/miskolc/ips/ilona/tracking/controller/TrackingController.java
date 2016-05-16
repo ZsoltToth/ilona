@@ -41,7 +41,7 @@ public class TrackingController {
 	 * 
 	 * @return The tracking index jsp page.
 	 */
-	@RequestMapping(value = "/index")
+	@RequestMapping(value = "/index", method=RequestMethod.GET)
 	public ModelAndView loadingStartpage() {
 		logger.info("Tracking index page request.");
 		ModelAndView back = new ModelAndView("tracking_index");
@@ -54,7 +54,7 @@ public class TrackingController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping(value = "/registration")
+	@RequestMapping(value = "/registration", method = RequestMethod.GET)
 	public ModelAndView loadLoginPage() {
 		logger.info("Tracking login page request.");
 		ModelAndView mav = new ModelAndView("tracking_registration");
@@ -62,9 +62,9 @@ public class TrackingController {
 		return mav;
 	}
 
-	@RequestMapping(value = "/getUser", method = RequestMethod.GET)
+	@RequestMapping(value = "/getUser/{userID}", method = RequestMethod.GET)
 	@ResponseBody
-	public UserData getUser(String userID) {
+	public UserData getUser(@RequestParam(value="userID", required=true)String userID) {
 		UserData data = null;
 
 		try {
