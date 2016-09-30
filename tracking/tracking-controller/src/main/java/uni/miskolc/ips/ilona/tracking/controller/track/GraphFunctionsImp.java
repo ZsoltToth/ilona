@@ -48,10 +48,21 @@ public class GraphFunctionsImp implements GraphFunctions {
 	}
 
 	@Override
-	public Collection<String> generateShortestPath(String start, String end) {
+	public Collection<String> generateShortestPath(String start, String end, int floor) {
 
-		DijkstraShortestPath<String, DefaultEdge> dij = new DijkstraShortestPath<String, DefaultEdge>(firstFloor, start,
-				end);
+		DijkstraShortestPath<String, DefaultEdge> dij = null;
+
+		switch (floor) {
+		case 0:
+			dij = new DijkstraShortestPath<String, DefaultEdge>(groundFloor, start, end);
+			break;
+		case 1:
+			dij = new DijkstraShortestPath<String, DefaultEdge>(firstFloor, start, end);
+			break;
+		default:
+			dij = new DijkstraShortestPath<String, DefaultEdge>(secondFloor, start, end);
+			break;
+		}
 		List<DefaultEdge> path = dij.getPathEdgeList();
 
 		List<String> thePath = new ArrayList<String>();

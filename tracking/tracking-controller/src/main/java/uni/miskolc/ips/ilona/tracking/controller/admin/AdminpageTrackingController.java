@@ -77,14 +77,14 @@ public class AdminpageTrackingController {
 	@ResponseBody
 	public Collection<PositionTrackDTO> getPositionsForDeviceHandler() throws TrackingServiceErrorException {
 		try {
-			int count = 8;
+			int count = 10;
 			Collection<PositionTrackDTO> positions = new ArrayList<PositionTrackDTO>();
 			for (int i = 0; i < count; i++) {
 				Coordinate coord = new Coordinate();
 				coord.setX(Math.random() * 50);
 				coord.setY(Math.random() * 28);
-				//coord.setZ(Math.random() * 10);
-				coord.setZ(Math.random() + 3);
+				coord.setZ(Math.random() * 10);
+				//coord.setZ(Math.random() + 1);
 				Position pos = new Position(coord);
 				Zone zone = new Zone("Zone-" + Math.random());
 				pos.setZone(zone);
@@ -104,9 +104,13 @@ public class AdminpageTrackingController {
 	@RequestMapping(value = "/tracking/calculatepath", method = { RequestMethod.POST })
 	@ResponseBody
 	public Collection<String> calculatePath(@RequestParam(value = "start") String start,
-			@RequestParam(value = "end") String end) {
-		return graphFunctions.generateShortestPath(start, end);
-		//return null;
+			@RequestParam(value = "end") String end, @RequestParam("floor") int floor) {
+		try {
+			return graphFunctions.generateShortestPath(start, end, floor);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@ExceptionHandler(TrackingServiceErrorException.class)

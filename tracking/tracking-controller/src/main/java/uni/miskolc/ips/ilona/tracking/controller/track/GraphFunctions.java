@@ -4,6 +4,6 @@ import java.util.Collection;
 
 public interface GraphFunctions {
 
-	public Collection<String> generateShortestPath(String from, String to);
+	public Collection<String> generateShortestPath(String from, String to, int floor);
 	
 }

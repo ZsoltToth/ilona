@@ -17,8 +17,8 @@ var graphNodesGroundFloor = {
 		posX : 137,
 		posY : 178
 	},
-	TOP_TEACHER_ROOM1_INNER : {
-		id : "TOP_TEACHER_ROOM1_INNER",
+	TOP_TEACHER_ROOM1_INNER1 : {
+		id : "TOP_TEACHER_ROOM1_INNER1",
 		name : "room101Inner",
 		posX : 320,
 		posY : 160
@@ -29,8 +29,8 @@ var graphNodesGroundFloor = {
 		posX : 340,
 		posY : 178
 	},
-	TOP_TEACHER_ROOM2_INNER : {
-		id : "TOP_TEACHER_ROOM2_INNER",
+	TOP_TEACHER_ROOM2_INNER1 : {
+		id : "TOP_TEACHER_ROOM2_INNER1",
 		name : "room102Inner",
 		posX : 430,
 		posY : 160
@@ -252,7 +252,7 @@ var graphNodesGroundFloor = {
 		posY : 449
 	},
 	MIDDLEBOTTOM_ROOM2_INNER1 : {
-		id : "MIDDLEBOTTOM_ROOM2_INNER2",
+		id : "MIDDLEBOTTOM_ROOM2_INNER1",
 		name : "topCorridor room 104",
 		posX : 670,
 		posY : 420
@@ -522,7 +522,7 @@ var ZonesGroundFloor = [
 			startY : 0,
 			endX : 362,
 			endY : 178,
-			Points : [ graphNodesGroundFloor["TOP_TEACHER_ROOM1_INNER"],
+			Points : [ graphNodesGroundFloor["TOP_TEACHER_ROOM1_INNER1"],
 					graphNodesGroundFloor["TOP_TEACHER_ROOM1_DOOR"] ]
 		},
 		{
@@ -531,7 +531,7 @@ var ZonesGroundFloor = [
 			startY : 0,
 			endX : 473,
 			endY : 178,
-			Points : [ graphNodesGroundFloor["TOP_TEACHER_ROOM2_INNER"],
+			Points : [ graphNodesGroundFloor["TOP_TEACHER_ROOM2_INNER1"],
 					graphNodesGroundFloor["TOP_TEACHER_ROOM2_DOOR"] ]
 		},
 		{

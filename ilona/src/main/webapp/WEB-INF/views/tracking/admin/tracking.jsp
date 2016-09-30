@@ -39,157 +39,55 @@
 	var positions;
 	
 	$(document).ready(function(){
-		adminTrackingPositionsTable = $("#adminTrackingPositionsTable").DataTable({
-			responsive: true,
-			paging: true,
-			ordering: true,
-			info: true
-		});
+		try {
+			adminTrackingPositionsTable = $("#adminTrackingPositionsTable").DataTable({
+				responsive: true,
+				paging: true,
+				ordering: true,
+				info: true
+			});
+			document.getElementById("adminTrackingSelectDeviceBTN").disabled = true;
+			
+			// initialize date picker
+			document.getElementById("adminTrackingFromDateTime").value = generateDateTimePickerValue();
+			document.getElementById("adminTrackingToDateTime").value = generateDateTimePickerValue();
+			
+		} catch(error) {
+			console.log(error);
+		}
+		
+	});
+
+	$("#adminTrackingUserAndDeviceChooserHeader").click(function(event){
+		try {
+			var panel =  $("#adminTrackingUserAndDeviceBody");
+			if(panel.hasClass("in")) {
+				panel.removeClass("in");
+			} else {
+				panel.addClass("in");
+			}
+		} catch(error) {
+			console.log(error);
+		}
 	});
 	
-		$("#draw1").click(function(){
-			var startLocation = [108,85];
-			var endLocation=[580,93];
-
-			var startPoint;
-			var endPoint;
-			// calculated start point
-			startPoint = points[0];
-			var distance = Math.sqrt(Math.pow(points[0].pointx - startLocation[0],2)+
-					Math.pow(points[0].pointy - startLocation[1],2));
-			for(var i = 1; i < points.length; i++) {
-				var distancePoints = Math.sqrt(Math.pow(points[i].pointx - startLocation[0],2)+
-						Math.pow(points[i].pointy - startLocation[1],2));
-				if(distance > distancePoints) {
-					distance = distancePoints;
-					startPoint = points[i];
-				}
+	$("#adminTrackingActualDeviceDataHeader").click(function(event){
+		try {
+			var panel =  $("#adminTrackingActualDeviceDataBody");
+			if(panel.hasClass("in")) {
+				panel.removeClass("in");
+			} else {
+				panel.addClass("in");
 			}
-			endPoint = points[0];
-			distance = Math.sqrt(Math.pow(points[0].pointx - endLocation[0],2)+
-					Math.pow(points[0].pointy - endLocation[1],2));
-			
-			for(var i = 1; i < points.length; i++) {
-				var distancePoints = Math.sqrt(Math.pow(points[i].pointx - endLocation[0],2)+
-						Math.pow(points[i].pointy - endLocation[1],2));
-				if(distance > distancePoints) {
-					distance = distancePoints;
-					endPoint = points[i];
-				}
-			}
-			//alert(startPoint.pointid);
-			//alert(endPoint.pointid);
-			var token = $("meta[name='_csrf']").attr("content");
-			var header = $("meta[name='_csrf_header']").attr("content");
-			var actualPoint;
-			$.ajax({
-				type : "POST",
-				async : false,
-				url : "<c:url value='/tracking/admin/tracking/calculatedpath' ></c:url>",
-				beforeSend : function(xhr) {
-					xhr.setRequestHeader(header, token);
-				},
-				data : {
-					start : startPoint.pointid,
-					end : endPoint.pointid
-				},
-				success : function(result, status, xhr) {
-					actualPoint = result;
-				},
-				error : function(xhr, status, error) {
-					alert("Error" + status + error);
-				}
-				
-			});
-			
-			var drawPoints = [];
-			for(var i = 0; i < actualPoint.length; i++) {
-				for(var j = 0; j < points.length; j++) {
-					if(points[j].pointid == actualPoint[i]) {
-						drawPoints.push(points[j]);
-						continue;
-					}
-				}
-			}
-			
-			
-			//alert(drawPoints);
-			//svgMain.selectAll("*").remove("*");
-			var startPointData =[];
-			startPointData.push({"x" : startLocation[0], "y": startLocation[1]});
-			for(var i = 0; i < drawPoints.length; i++) {
-				startPointData.push({"x": drawPoints[i].pointx, "y": drawPoints[i].pointy});
-			}
-			startPointData.push({"x": endLocation[0], "y": endLocation[1]});
-			/*
-			
-			var dataSet1 = [{ "x": 300,   "y": 150},  { "x": 300,  "y": 250},
-			               { "x": 300,   "y": 400},  { "x": 350,  "y": 500},
-			               { "x": 400,   "y": 600},  { "x": 700,  "y": 700}];
-			*/
-			//var lineGrapha = d3.svg.line().x( function(d) { return d.x; }).y( function(d) {return d.y; }).interpolate("linear"); // v3
-			var lineGrapha = d3.line().x( function(d) { return d.x; }).y( function(d) {return d.y; }).curve(d3.curveBasis);	// v4
-			svgMain.append("path").attr("d", lineGrapha(startPointData)).attr("stroke", "blue").attr("stroke-width",2).attr("fill", "none");
-			var urlMarker = "<c:url value='/img/marker.png'></c:url>"
-			svgMain
-	    	.append("image")
-	        .attr("xlink:href", urlMarker)
-	        .attr("x", startLocation[0] - 7)
-	        .attr("y", startLocation[0] - 40)
-	        .attr("width", 14)
-	        .attr("height", 20);
-			
-			svgMain
-	    	.append("image")
-	        .attr("xlink:href", urlMarker)
-	        .attr("x", endLocation[0] - 30)
-	        .attr("y", endLocation[1] - 30)
-	        .attr("width", 30)
-	        .attr("height", 30)
-	        .attr("id","vege");
-	        //$("#circleJo").hide();
-		});
-		/*
-		var list = document.getElementById("sel2");
-		var szov = "";
-		while(list.length != 0) {
-			list.remove(0);
+		} catch(error) {
+			console.log(error);
 		}
-		
-		for (var i = 0; i < list.length; i++) {
-			list.remove(i);
-		}
-		
-		for (var i = 0; i < list.length; i++) {
-			szov += " " + list[i].text;
-		}
-		for (var i = 0; i < 10; i++) {
-			var option = document.createElement("option");
-			option.text = "text" + i;
-			list.add(option);
-		}		
-		$("#szovki").html(szov);
-		*/
-		var svgMain = d3.select("#adminTrackingDrawingContent").append("svg").attr("width",1500).attr("height",1000);
-
-		$("#adminTrackingUserAndDeviceChooserHeader").click(function(event){
-			try {
-				var panel =  $("#adminTrackingUserAndDeviceBody");
-				if(panel.hasClass("in")) {
-					panel.removeClass("in");
-				} else {
-					panel.addClass("in");
-				}
-			} catch(error) {
-				console.log(error);
-			}
-		});
+	});
 	
-		
+			
 	$("#adminTrackingSelectUsersBTN").click(function(event){
 		try {
 			event.preventDefault();
-			
 			var token = $("meta[name='_csrf']").attr("content");
 			var header = $("meta[name='_csrf_header']").attr("content");
 			
@@ -208,6 +106,9 @@
 				success : function(result, status, xhr) {
 					try {
 						clearAndFillSelectElement("adminTrackingDevicesSelect", result);
+						if(result.length != 0) {
+							document.getElementById("adminTrackingSelectDeviceBTN").disabled = false;
+						}
 						$("#adminTrackingDevicesPanelHeader").html("Devices: " + value);
 					} catch(error) {
 						console.log(error);
@@ -221,9 +122,7 @@
 			console.log(error);
 		}	
 	});
-	
-	
-	
+
 	function resetFloors() {
 		try {
 			$("#adminTrackingGroundFloorDIV").html("");
@@ -252,7 +151,13 @@
 	$("#adminTrackingSelectDeviceBTN").click(function(event){
 		try {
 			event.preventDefault();
-			
+			var fromValue = document.getElementById("adminTrackingFromDateTime").value;
+			var toValue = document.getElementById("adminTrackingToDateTime").value;
+			if (fromValue.length == 0 || toValue.length == 0) {
+				return;
+			}
+			var dateFrom = new Date(fromValue);
+			var dateTo = new Date(toValue);
 			var token = $("meta[name='_csrf']").attr("content");
 			var header = $("meta[name='_csrf_header']").attr("content");
 			 
@@ -264,24 +169,66 @@
 					xhr.setRequestHeader(header, token);
 				},
 				data : {
-					
+					from : dateFrom.getTime(),
+					to : dateTo.getTime()
 				},
 				success : function(result, status, xhr) {
 					try {
+						if(result.length == 0) {
+							document.getElementById("adminTrackingSelectDeviceBTN").disabled = true;
+							return;
+						}
 						positions = result;
+						sortPositionsByTime(positions);
 						resetFloors();
 						adminTrackingPositionsTable.clear().draw();
 						fillDataTableWithValues(adminTrackingPositionsTable, positions);
-						drawPositions(positions, [groundFloorMap, firstFloorMap, secondFloorMap], markerImageSource);
+						drawPositions(positions, [groundFloorMap, firstFloorMap, secondFloorMap], markerImageSource,
+								function() {
+							try {
+								var length = positions.length;
+								var i = 0;
+								var actualId = d3.select(this).attr("data-id");
+								for (i; i < length; i++) {
+									if(positions[i].position.uuid) {
+										$("#adminTrackingActualPositionId").val(actualId);
+										$("#adminTrackingActualPositionZoneName")
+											.val(positions[i].position.zone.id);
+										$("#adminTrackingActualPositionTimestamp")	
+											.val(new Date(positions[i].date));
+									}
+								}
+							} catch(error) {
+								console.log(error);
+							}
+							
+						});
 						//createMap("adminTrackingFirstFloorDIV", firstFloorImageSource);
-						drawGraphPoints(groundFloorMap, graphNodesGroundFloor);
-						drawGraphPoints(firstFloorMap, graphNodesFirstFloor);
-						drawGraphPoints(secondFloorMap, graphNodesSecondFloor);
-						drawArea(groundFloorMap, ZonesGroundFloor);
-						drawArea(firstFloorMap, ZonesFirstFloor);
-						drawArea(secondFloorMap, ZonesSecondFloor);
+						//drawGraphPoints(groundFloorMap, graphNodesGroundFloor);
+						//drawGraphPoints(firstFloorMap, graphNodesFirstFloor);
+						//drawGraphPoints(secondFloorMap, graphNodesSecondFloor);
+						//drawArea(groundFloorMap, ZonesGroundFloor);
+						//drawArea(firstFloorMap, ZonesFirstFloor);
+						//drawArea(secondFloorMap, ZonesSecondFloor);
 						var url = "<c:url value='/tracking/admin/tracking/calculatepath'></c:url>";
-						generatePath(positions, url);
+						generatePath(positions, url, function(startPos, points) {
+							try {
+								var floor = calculateFloor(startPos);
+								switch(floor) {
+								case 0: 
+									drawPath(groundFloorMap, points);
+									break;
+								case 1:
+									drawPath(firstFloorMap, points);
+									break;
+								default:
+									drawPath(secondFloorMap, points);
+									break;
+								}
+							} catch(error) {
+								console.log(error);
+							}
+						});
 					} catch(error) {
 						console.log(error);
 					}
@@ -338,28 +285,42 @@
 				      			<select  class="form-control" id="adminTrackingDevicesSelect">
 				      			</select>
 				      			<br />
+				      			<label for="adminTrackingFromDateTime">From</label>
+				      			<input type="datetime-local" id="adminTrackingFromDateTime">
+				      			<br />
+				      			<label for="adminTrackingToDateTime">To</label>
+				      			<input type="datetime-local" id="adminTrackingToDateTime">  
+				      			<br />
 				      			<input type="button" value="Select device!" id="adminTrackingSelectDeviceBTN">   			
 							</div>
 						</div>
 			      </div>
 			    </div>
 			  </div>
-			</div>		
-		</div>	
-			
-		<div class="col-lg-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">			
-					Date picker from - to !	      			
-	      			<input type="button" value="DRAW111!" id="draw111">
-	      			<input type="button" value="DRAW1!" id="draw1"><br />
-	      			<input type="button" value="DRAW2!" id="draw2">
-				</div>
-				
 			</div>
-	     
-		</div>
-		
+			
+			<div class="panel panel-default">
+			  	<div class="panel-heading" id="adminTrackingActualDeviceDataHeader" style="text-align: center">
+			  		<h4 class="panel-title">
+				  		<span class="fa fa-arrow-circle-down"></span>
+				        Actual position data
+				        <span class="fa fa-arrow-circle-down"></span>
+			  		</h4>
+			  	</div>
+			  	<div id="adminTrackingActualDeviceDataBody" class="panel-collapse collapse">
+				  	<div class="panel-body">
+				  		<label for="adminTrackingActualPositionId">Position id:</label>
+				  		<input class="form-control" type="text" id="adminTrackingActualPositionId" readonly="readonly">
+				  		<br />
+				  		<label for="adminTrackingActualPositionZoneName">Zone name:</label>
+				  		<input class="form-control" type="text" id="adminTrackingActualPositionZoneName" readonly="readonly">
+				  		<br />
+				  		<label for="adminTrackingActualPositionTimestamp">Time:</label>
+				  		<input class="form-control" type="text" id="adminTrackingActualPositionTimestamp" readonly="readonly">
+				  	</div>
+			  	</div>	
+			</div>		
+		</div>				
 	</div>
 	
 	<div class="row">
@@ -406,21 +367,4 @@
 		</div>
 	</div>
 	
-	<div class="row">
-		<div class="col-lg-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<ul class="breadcrumb">
-					  <li><a id="adminTrackingPositionsTableDrawMenuItem" href="#">Positions table</a></li>
-					  <li><a id="adminTrackingGroundFloorMapDrawMenuItem" href="#">Ground floor</a></li>
-					  <li><a id="adminTrackingFirstFloorMapDrawMenuItem" href="#">First floor</a></li>
-					  <li><a id="adminTrackingSecondFloorMapDrawMenuItem">Second floor</a></li> 
-					</ul>
-				</div>
-				<div class="panel-body" id="adminTrackingDrawingContent">
-					
-				</div>
-			</div>
-		</div>
-	</div>
 </div>

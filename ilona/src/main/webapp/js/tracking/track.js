@@ -52,7 +52,6 @@ function fillDataTableWithValues(dataTable, data) {
 					data[i].position.coordinate.y,
 					data[i].position.coordinate.z, new Date(data[i].date) ];
 			dataTable.row.add(row).draw(false);
-			// console.log("ROW: " + row);
 		}
 	} catch (error) {
 		throw "Function :: fillDataTableWithValues Error: " + error;
@@ -91,8 +90,8 @@ function createMap(div, imageSource) {
 	try {
 
 		$("#" + div).html("");
-		floorMapSVG = d3.select("#" + div).append("svg").attr("width", "100%")
-				.attr("height", "100%").attr("viewBox", "0 0 1196 705");
+		var floorMapSVG = d3.select("#" + div).append("svg").attr("width",
+				"100%").attr("height", "100%").attr("viewBox", "0 0 1196 705");
 		floorMapSVG.append("image").attr("xlink:href", imageSource)
 				.attr("x", 0).attr("y", 0).attr("width", 1196).attr("height",
 						705);
@@ -102,7 +101,7 @@ function createMap(div, imageSource) {
 	}
 }
 
-function drawPositions(positions, floors, marker) {
+function drawPositions(positions, floors, marker, clickHandler) {
 	try {
 		var length = positions.length;
 		var i = 0;
@@ -115,7 +114,8 @@ function drawPositions(positions, floors, marker) {
 						.attr("r", 5);
 				floors[0].append("image").attr("xlink:href", marker).attr("x",
 						posX - 15).attr("y", posY - 30).attr("width", 30).attr(
-						"height", 30);
+						"height", 30).attr("data-id",
+						positions[i].position.uuid).on("click", clickHandler);
 				continue;
 			}
 
@@ -124,7 +124,8 @@ function drawPositions(positions, floors, marker) {
 						.attr("r", 5);
 				floors[1].append("image").attr("xlink:href", marker).attr("x",
 						posX - 15).attr("y", posY - 30).attr("width", 30).attr(
-						"height", 30);
+						"height", 30).attr("data-id",
+						positions[i].position.uuid).on("click", clickHandler);
 				continue;
 			}
 
@@ -132,7 +133,8 @@ function drawPositions(positions, floors, marker) {
 					"r", 5);
 			floors[2].append("image").attr("xlink:href", marker).attr("x",
 					posX - 15).attr("y", posY - 30).attr("width", 30).attr(
-					"height", 30);
+					"height", 30).attr("data-id", positions[i].position.uuid)
+					.on("click", clickHandler);
 
 		}
 	} catch (error) {
@@ -165,7 +167,7 @@ function sortPositionsByTime(positions) {
 	}
 }
 
-function generatePath(positions, url) {
+function generatePath(positions, url, pointsHandler) {
 	try {
 		sortPositionsByTime(positions);
 		var length = positions.length;
@@ -182,10 +184,11 @@ function generatePath(positions, url) {
 
 			if (floorFirst == floorSecond) {
 
-				getThePathFromTheServer(positions[i], positions[i + 1], url);
+				getThePathFromTheServer(positions[i], positions[i + 1], url,
+						pointsHandler);
 			} else {
 				console.log("generatePath else ág!!!");
-				return;
+				continue;
 			}
 		}
 	} catch (error) {
@@ -259,7 +262,7 @@ function calculateNearestNode(position, floor) {
 	}
 }
 
-function getThePathFromTheServer(startPos, endPos, url) {
+function getThePathFromTheServer(startPos, endPos, url, pointsHandler) {
 	try {
 		var startNode = calculateNearestNode(startPos, calculateFloor(startPos));
 		var endNode = calculateNearestNode(endPos, calculateFloor(endPos));
@@ -276,15 +279,15 @@ function getThePathFromTheServer(startPos, endPos, url) {
 					},
 					data : {
 						start : startNode.id,
-						end : endNode.id
+						end : endNode.id,
+						floor : calculateFloor(startPos)
 					},
 					success : function(result, status, xhr) {
 						try {
 							var points = generatePathInputData(startPos,
 									endPos, result);
-							drawPath(
-									getFloorByNumber(calculateFloor(startPos)),
-									points);
+							pointsHandler(startPos, points);
+							// drawPath(getFloorByNumber(calculateFloor(startPos)),points);
 						} catch (error) {
 							console.log(error);
 						}
@@ -332,9 +335,36 @@ function drawPath(floorMap, data) {
 		}).y(function(d) {
 			return d.y;
 		}).curve(d3.curveCatmullRom.alpha(0.5))// .curve(d3.curveBasis); // v4
-		firstFloorMap.append("path").attr("d", lineGrapha(data)).attr("stroke",
+		floorMap.append("path").attr("d", lineGrapha(data)).attr("stroke",
 				"blue").attr("stroke-width", 2).attr("fill", "none");
 	} catch (error) {
 		throw "Function :: drawPath Error: " + error;
+	}
+}
+
+function generateDateTimePickerValue() {
+	try {
+		var d = new Date();
+		var year = "" + d.getFullYear();
+		var month = "" + (d.getMonth() + 1);
+		var day = "" + (d.getDay() + 1);
+		var hours = "" + d.getHours();
+		var minutes = "" + d.getMinutes();
+		if (month.length == 1) {
+			month = "0" + month;
+		}
+		if (day.length == 1) {
+			day = "0" + day;
+		}
+		if (hours.length == 1) {
+			hours = "0" + hours;
+		}
+		if (minutes.length == 1) {
+			minutes = "0" + minutes;
+		}
+		return "" + year + "-" + month + "-" + day + "T" + hours + ":"
+				+ minutes;
+	} catch (error) {
+		throw "Function :: generateDateTimePickerValue Error: " + error;
 	}
 }

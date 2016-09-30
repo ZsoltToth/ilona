@@ -168,7 +168,7 @@ var graphNodesSecondFloor = {
 		posY : 245
 	},
 	MIDDLE_ROOM5_DOOR : {
-		id : "MIDDLE_ROOM6_DOOR",
+		id : "MIDDLE_ROOM5_DOOR",
 		name : "topCorridor room 104",
 		posX : 920,
 		posY : 245
@@ -180,7 +180,7 @@ var graphNodesSecondFloor = {
 		posY : 330
 	},
 	MIDDLEBOTTOM_ROOM1_DOOR : {
-		id : "MIDDLEBOTTOM_PRINTERROOM_DOOR",
+		id : "MIDDLEBOTTOM_ROOM1_DOOR",
 		name : "topCorridor room 104",
 		posX : 545,
 		posY : 449
@@ -198,7 +198,7 @@ var graphNodesSecondFloor = {
 		posY : 449
 	},
 	MIDDLEBOTTOM_ROOM2_INNER1 : {
-		id : "MIDDLEBOTTOM_ROOM2_INNER2",
+		id : "MIDDLEBOTTOM_ROOM2_INNER1",
 		name : "topCorridor room 104",
 		posX : 670,
 		posY : 420
@@ -216,7 +216,7 @@ var graphNodesSecondFloor = {
 		posY : 449
 	},
 	MIDDLEBOTTOM_WC1_INNER1 : {
-		id : "MIDDLEBOTTOM_WC1_DOOR",
+		id : "MIDDLEBOTTOM_WC1_INNER1",
 		name : "topCorridor room 104",
 		posX : 830,
 		posY : 430
@@ -492,7 +492,7 @@ var ZonesSecondFloor = [
 			endX : 962,
 			endY : 178,
 			Points : [ graphNodesSecondFloor["TOP_LABOR4_INNER1"],
-					graphNodesSecondFloor["TOP_LABOR4DOOR"] ]
+					graphNodesSecondFloor["TOP_LABOR4_DOOR"] ]
 		},
 		{
 			name : "top labor 5",

@@ -17,7 +17,7 @@
 		</graph:node>
 
 		<graph:node>
-			<graph:name>TOP_TEACHER_ROOM1_INNER</graph:name>
+			<graph:name>TOP_TEACHER_ROOM1_INNER1</graph:name>
 			<graph:description></graph:description>
 		</graph:node>
 		<graph:node>
@@ -26,7 +26,7 @@
 		</graph:node>
 
 		<graph:node>
-			<graph:name>TOP_TEACHER_ROOM2_INNER</graph:name>
+			<graph:name>TOP_TEACHER_ROOM2_INNER1</graph:name>
 			<graph:description></graph:description>
 		</graph:node>
 		<graph:node>
@@ -389,13 +389,13 @@
 		</graph:edge>
 
 		<graph:edge>
-			<graph:from>TOP_TEACHER_ROOM1_INNER</graph:from>
+			<graph:from>TOP_TEACHER_ROOM1_INNER1</graph:from>
 			<graph:to>TOP_TEACHER_ROOM1_DOOR</graph:to>
 			<graph:weight>0</graph:weight>
 			<graph:description></graph:description>
 		</graph:edge>
 		<graph:edge>
-			<graph:from>TOP_TEACHER_ROOM2_INNER</graph:from>
+			<graph:from>TOP_TEACHER_ROOM2_INNER1</graph:from>
 			<graph:to>TOP_TEACHER_ROOM2_DOOR</graph:to>
 			<graph:weight>0</graph:weight>
 			<graph:description></graph:description>
