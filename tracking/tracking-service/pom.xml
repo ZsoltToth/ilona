@@ -32,5 +32,10 @@
 			<artifactId>tracking-model</artifactId>
 			<version>${tracking.model.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>uni.miskolc.ips.ilona</groupId>
+			<artifactId>measurement-model</artifactId>
+			<version>0.1.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
