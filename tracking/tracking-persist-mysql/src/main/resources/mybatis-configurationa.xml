@@ -11,6 +11,8 @@
 			type="uni.miskolc.ips.ilona.tracking.persist.mysql.model.PasswordRecoveryTokenMapper" />
 		<typeAlias alias="rememberMeToken"
 			type="uni.miskolc.ips.ilona.tracking.persist.mysql.model.PersistenceTokenMapper" />
+		<typeAlias alias="trackPosMapper"
+			type="uni.miskolc.ips.ilona.tracking.persist.mysql.model.TrackPositionMapper" />
 	</typeAliases>
 
 	<typeHandlers>
@@ -34,6 +36,8 @@
 			resource="uni/miskolc/ips/ilona/tracking/persist/mysql/mappers/SecurityFunctionsUserMapper.xml" />
 		<mapper
 			resource="uni/miskolc/ips/ilona/tracking/persist/mysql/mappers/RememberMeTokenMapper.xml" />
+		<mapper
+			resource="uni/miskolc/ips/ilona/tracking/persist/mysql/mappers/TrackMapper.xml" />
 
 	</mappers>
 </configuration>

@@ -160,6 +160,19 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 	}
 
 	@Override
+	public DeviceData readDevice(String deviceid) throws DeviceNotFoundException, ServiceGeneralErrorException {
+		try {
+			return userDeviceDAO.readDevice(deviceid);
+		} catch (Exception e) {
+			if (e instanceof uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException) {
+				throw new DeviceNotFoundException("Device not found with id: " + deviceid, e);
+			}
+			logger.error("Error: " + e.getMessage());
+			throw new ServiceGeneralErrorException("Error", e);
+		}
+	}
+
+	@Override
 	public Collection<DeviceData> readUserDevices(UserData user)
 			throws UserNotFoundException, ServiceGeneralErrorException {
 		Collection<DeviceData> devices = null;

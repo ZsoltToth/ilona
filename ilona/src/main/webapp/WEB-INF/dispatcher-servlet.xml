@@ -21,8 +21,9 @@
 	<context:component-scan base-package="uni.miskolc.ips.ilona.tracking.controller" />
 	<context:component-scan base-package="uni.miskolc.ips.ilona.tracking.controller.user" />
 	<context:component-scan base-package="uni.miskolc.ips.ilona.tracking.controller.admin" />
+	<!--  
 	<context:component-scan base-package="uni.miskolc.ips.ilona.navigation.controller" />
-	
+	-->
 	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
 

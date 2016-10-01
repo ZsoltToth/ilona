@@ -249,6 +249,29 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 	}
 
 	@Override
+	public DeviceData readDevice(String deviceid) throws DeviceNotFoundException, OperationExecutionErrorException {
+		SqlSession session = sessionFactory.openSession();
+
+		try {
+			UserAndDeviceMapper mapper = session.getMapper(UserAndDeviceMapper.class);
+			DeviceData device = mapper.getDevice(deviceid);
+			if (device == null) {
+				throw new DeviceNotFoundException();
+			}
+			return device;
+		} catch (Exception e) {
+			if (e instanceof DeviceNotFoundException) {
+				throw new DeviceNotFoundException("Device not found with id: " + deviceid, e);
+			}
+			logger.error("Error message: " + e.getMessage());
+			throw new OperationExecutionErrorException("Error: " + e.getMessage());
+		} finally {
+			session.close();
+		}
+
+	}
+
+	@Override
 	public Collection<DeviceData> readUserDevices(UserData user) throws OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		Collection<DeviceData> devices = new ArrayList<DeviceData>();

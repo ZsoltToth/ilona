@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="uni.miskolc.ips.ilona.tracking.persist.mysql.mappers.TrackMapper">
+
+	<resultMap type="trackPosMapper" id="trackingPositionMapper">
+		<id column="positionid" property="positionid" />
+		<result column="coordx" property="coordx" />
+		<result column="coordy" property="coordy" />
+		<result column="coordz" property="coordz" />
+		<result column="zoneid" property="zoneid" />
+		<result column="zonename" property="zoneName" />
+		<result column="meastime" property="time" />
+	</resultMap>
+
+	<select id="getTrackPosition" resultMap="trackingPositionMapper">
+		select a.positionid,
+		b.coordx, b.coordy, b.coordz, b.zoneid,
+		b.zonename,
+		round(unix_timestamp(a.meastime) * 1000) as meastime from
+		trackinglocations a inner join trackingpositions b on a.positionid =
+		b.posid where a.positionid = #{positionid};
+	</select>
+
+	<select id="getTrackPositionsInterval" resultMap="trackingPositionMapper">
+		select
+		a.positionid, b.coordx, b.coordy, b.coordz, b.zoneid,
+		b.zonename,
+		round(unix_timestamp(a.meastime) * 1000) as meastime from
+		trackinglocations a inner join trackingpositions b on a.positionid =
+		b.posid where a.deviceid = #{deviceid} and a.meastime &gt; #{from} and
+		a.meastime &lt; #{to};
+	</select>
+
+	<insert id="storePositionLocation">
+		insert into trackinglocations
+		values(#{deviceid},
+		#{positionid}, from_unixtime(#{time}));
+	</insert>
+
+	<insert id="storePosition">
+		insert into trackingpositions values(#{positionid},
+		#{coordx}, #{coordy}, #{coordz}, #{zoneid}, #{zoneName});
+	</insert>
+</mapper>

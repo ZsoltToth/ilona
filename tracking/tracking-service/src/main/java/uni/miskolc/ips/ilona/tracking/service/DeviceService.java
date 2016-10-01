@@ -1,5 +1,6 @@
 package uni.miskolc.ips.ilona.tracking.service;
 
+import java.rmi.server.ServerCloneException;
 import java.util.Collection;
 
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
@@ -13,6 +14,8 @@ public interface DeviceService {
 
 	void storeDevice(DeviceData device, UserData user)
 			throws UserNotFoundException, DuplicatedDeviceException, ServiceGeneralErrorException;
+
+	DeviceData readDevice(String deviceid) throws DeviceNotFoundException, ServiceGeneralErrorException;
 
 	Collection<DeviceData> readUserDevices(UserData user) throws UserNotFoundException, ServiceGeneralErrorException;
 

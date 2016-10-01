@@ -61,13 +61,24 @@
 		<constructor-arg name="password" value="${database.password}" />
 	</bean>
 
+	<bean id="trackingDAO"
+		class="uni.miskolc.ips.ilona.tracking.persist.mysql.MySqlAndMybatisTrackingDAOImpl">
+		<constructor-arg name="host" value="${database.host}" />
+		<constructor-arg name="port" value="${database.port}" />
+		<constructor-arg name="database" value="${database.db}" />
+		<constructor-arg name="user" value="${database.user}" />
+		<constructor-arg name="password" value="${database.password}" />
+	</bean>
+
+	<bean id="trackService"
+		class="uni.miskolc.ips.ilona.tracking.service.impl.TrackingServiceImpl">
+	</bean>
+
 	<bean id="trackingPasswordEncoder" autowire="byName"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
 		<constructor-arg name="strength" value="10"></constructor-arg>
 	</bean>
-	<!-- 
-	<bean id="customLogout" class="security.CustomlogoutSuccerHandler"></bean>
- 	-->
+	<!-- <bean id="customLogout" class="security.CustomlogoutSuccerHandler"></bean> -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="port" value="587" />
@@ -113,7 +124,8 @@
 		<constructor-arg index="6" ref="passwordGenerator"></constructor-arg>
 	</bean>
 
-	<bean id="graphFunctions" class="uni.miskolc.ips.ilona.tracking.controller.track.GraphFunctionsImp">
+	<bean id="graphFunctions"
+		class="uni.miskolc.ips.ilona.tracking.controller.track.GraphFunctionsImp">
 	</bean>
 
 	<!-- Security part -->

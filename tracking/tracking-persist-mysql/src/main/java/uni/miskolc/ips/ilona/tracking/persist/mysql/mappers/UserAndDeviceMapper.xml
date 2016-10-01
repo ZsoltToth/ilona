@@ -60,6 +60,12 @@
 		userid = #{userid};
 	</select>
 
+	<select id="getDevice" resultMap="DeviceDataResult">
+		select deviceid,
+		devicename, devicetype, devicetypename from TrackingDevices where
+		deviceid = #{deviceid};
+	</select>
+
 	<select id="getUserDevices" resultMap="DeviceDataResult">
 		select deviceid,
 		devicename, devicetype, devicetypename from TrackingDevices where

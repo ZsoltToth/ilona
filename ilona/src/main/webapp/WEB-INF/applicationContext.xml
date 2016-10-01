@@ -93,7 +93,7 @@
 			value="/home/ilona/Mneuralnetwork.ser" />
 		<constructor-arg name="pathToWifiNeuralNetwork" value="/home/ilona/Wneuralnetwork.ser" />
 	</bean>
-	
+	<!--  
 	<bean id="ontologyDAO" class="uni.miskolc.ips.ilona.navigation.persist.ontology.OntologyDAOImpl">
 		<constructor-arg name="baseOntologyPath" value="/home/dpkun/git/ilona/navigation/navigation-persist-ontology/resources/ILONABASE.owl"/>
 		<constructor-arg name="navigationOntologyPath" value="/home/dpkun/git/ilona/navigation/navigation-persist-ontology/resources/dummy.owl"/>
@@ -108,7 +108,7 @@
 		<constructor-arg name="ontologyDAO" ref="ontologyDAO"/>
 		<constructor-arg name="zoneDAO" ref="zoneDAO"/>
 	</bean>
-
+	-->
 	<!-- <bean id="measurementManagerService" class="uni.miskolc.ips.ilona.measurement.service.impl.MeasurementManagerServiceImpl"> 
 		<constructor-arg ref="positionDAO" /> <constructor-arg ref="measurementDAO" 
 		/> </bean> -->

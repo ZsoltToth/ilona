@@ -24,7 +24,9 @@ import uni.miskolc.ips.ilona.tracking.controller.model.ExecutionResultDTO;
 import uni.miskolc.ips.ilona.tracking.controller.model.PositionTrackDTO;
 import uni.miskolc.ips.ilona.tracking.controller.track.GraphFunctions;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
+import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
 import uni.miskolc.ips.ilona.tracking.model.UserData;
+import uni.miskolc.ips.ilona.tracking.persist.TrackingDAO;
 import uni.miskolc.ips.ilona.tracking.service.UserAndDeviceService;
 
 @Controller
@@ -39,6 +41,9 @@ public class AdminpageTrackingController {
 	@Resource(name = "graphFunctions")
 	private GraphFunctions graphFunctions;
 
+	@Resource(name = "trackingDAO")
+	private TrackingDAO trackingDAO;
+	
 	@RequestMapping(value = "/trackingmainpage", method = { RequestMethod.POST })
 	public ModelAndView createTrackingMainpage() {
 		ModelAndView mav = new ModelAndView("tracking/admin/tracking");
@@ -93,7 +98,12 @@ public class AdminpageTrackingController {
 				long randomTime = new Date().getTime() - (long) Math.round(Math.random() * 10_000_000D);
 				dto.setDate(new Date(randomTime));
 				positions.add(dto);
+				//DeviceData dev = new DeviceData();
+				//dev.setDeviceid("dev002");
+				///trackingDAO.storePosition(dev, pos);
 			}
+			
+			trackingDAO.readPosition("aaaa");
 			return positions;
 		} catch (Exception e) {
 			logger.error("Service error! Cause: " + e.getMessage());
