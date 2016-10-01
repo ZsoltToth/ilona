@@ -1,173 +1,83 @@
 package uni.miskolc.ips.ilona.navigation.model;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 
 public class ZoneMapTest {
+	static UUID zone1;
+	static UUID zone2;
+	static UUID zone3;
+	static UUID zone4;
+	static UUID zone5;
+	static Gateway path1;
+	static Gateway path2;
+	static Gateway path3;
+	static Gateway path4;
+	static Gateway path5;
+	static Gateway path6;
+	static ZoneMap map;
 	
-	static Collection<Zone> testZones;
-    static Map<Zone, Set<String>> testAttributes;
-	static Set<String> firstSet;
-	static Set<String> secondSet;
-	static Set<String> thirdSet;
-	static Zone firstZone;
-    static Zone secondZone;
-    static Zone thirdZone;
-    static ZoneMap testMap;
-    static Zone testZone;
-    static Set<String> testSet;
-    
-	@Before
-	public void setUp(){
-		firstSet = new HashSet<String>();
-		secondSet = new HashSet<String>();
-		thirdSet = new HashSet<String>();
-		firstZone = new Zone("first");
-		secondZone = new Zone("second");
-		thirdZone = new Zone("third");
-		testAttributes = new HashMap<>();
-		testZones = new HashSet<Zone>();
+	@BeforeClass
+	public static void setUp(){
+		Set<UUID> zones = new HashSet<>();
+		Set<Gateway> paths = new HashSet<>();
 		
-	     firstSet.add("a");
-	     firstSet.add("b");
-	     firstSet.add("c");
-	     secondSet.add("a");
-	     thirdSet.add("c");
-		 
-	     testZones.add(firstZone);
-	     testZones.add(secondZone);
-	     testZones.add(thirdZone);
-		 
-	     testAttributes.put(firstZone, firstSet);
-	     testAttributes.put(secondZone, secondSet);
-	     testAttributes.put(thirdZone, thirdSet);
-	     
-	     testMap= new ZoneMap(testZones, testAttributes);
-	     
-	  testMap.addGateWay(firstZone, secondZone, Gateway.DOOR);
-     testMap.addGateWay(secondZone, thirdZone, Gateway.STAIRCASE);
-	     
-	}
-	
-	@Test
-	public void ZoneMapVertexTest(){
-	boolean expected = testMap.getZoneGraph().containsVertex(firstZone);
-	assertTrue(expected);
-	}
-	
-	@Test
-	public void ZoneMapEdgeTest(){
-	boolean expected = testMap.getZoneGraph().containsEdge(firstZone, secondZone);
-	assertTrue(expected);
-	}
-	
-	@Test
-	public void areNeighboursTest(){
-		boolean actual=testMap.areNeighbours(firstZone, secondZone);
-		assertTrue(actual);
+		zone1 = UUID.randomUUID();
+		zones.add(zone1);
+		zone2 = UUID.randomUUID();
+		zones.add(zone2);
+		zone3 = UUID.randomUUID();
+		zones.add(zone3);
+		zone4 = UUID.randomUUID();
+		zones.add(zone4);
+		zone5 = UUID.randomUUID();
+		zones.add(zone5);
 		
+		path1= new Gateway(zone1, zone2);
+		paths.add(path1);
+		path2= new Gateway(zone2, zone3);
+		paths.add(path2);
+		path3= new Gateway(zone3, zone4);
+		paths.add(path3);
+		path4= new Gateway(zone4, zone5);
+		paths.add(path4);
+		path5= new Gateway(zone1, zone5);
+		paths.add(path5);
+		path6= new Gateway(zone2, zone4);
+		paths.add(path6);
+		
+		map = new ZoneMap(zones, paths);
 	}
 	
 	@Test
-	public void isConnectedTest(){
-		boolean actual=testMap.isConnected(secondZone, thirdZone);
-		assertTrue(actual);
+	public void testFindPathOnlyOne(){
+		List<UUID> expected = new ArrayList<>();
+		expected.add(zone1);
+		expected.add(zone5);
+		assertEquals(expected,map.findPath(zone1, zone5));
 	}
 	
 	@Test
-	public void howFarItIsTest(){
-		int actual= testMap.howFarItIs(firstZone, thirdZone);
-		int distanceOfTheTwoZones=2;
-		assertEquals( distanceOfTheTwoZones, actual);
+	public void testFindPathMore(){
+		List<UUID> expected = new ArrayList<>();
+		expected.add(zone1);
+		expected.add(zone5);
+		List<UUID> destinations = new ArrayList<>();
+		destinations.add(zone4);
+		destinations.add(zone5);
+		assertEquals(expected, map.findPath(zone1, destinations));
 	}
 	
-	@Test
-	public void addZoneTest(){
-		testZone = new Zone("test");
-		testMap.addZone(testZone, firstSet);
-		assertTrue(testMap.getZoneGraph().containsVertex(testZone));
-	}
 	
-	@Test
-	public void addAttributeTest(){
-		testMap.addAttribute(firstZone, "test");
-		assertTrue(testMap.getAttributes().get(firstZone).contains("test"));
-	}
-	
-	@Test
-	public void addPathTest(){
-		testMap.addGateWay(thirdZone, firstZone, Gateway.VIRTUALGATEWAY);;
-		assertTrue(testMap.getZoneGraph().containsEdge(thirdZone, firstZone));
-	}
-	
-	@Test
-	public void removeZoneTest(){
-		testMap.removeZone(firstZone);
-		assertFalse(testMap.getZoneGraph().containsVertex(firstZone));;
-	}
-	
-	@Test
-	public void removeAttributeTest(){
-		testMap.removeAttribute(firstZone, "b");
-		assertFalse(testMap.getAttributes().get(firstZone).contains("b"));;
-	}
-	
-	@Test
-	public void removePathTest(){
-		testMap.removePath(firstZone, secondZone);
-		assertFalse(testMap.getZoneGraph().containsEdge(firstZone, secondZone));;
-	}
-	
-	@Test
-	public void hasAttributeTest(){
-		assertTrue(testMap.hasAttribute(firstZone, "b"));
-	}
-	
-	@Test
-	public void getZonesWithAttributeTest(){
-		String actual = testMap.getZonesWithAttribute("b").toString();
-		assertEquals("["+firstZone.toString()+"]", actual);
-	}
-	
-	@Test(expected=NoSuchZoneException.class)
-	public void NoSuchZoneExceptionTest(){
-		testMap.hasAttribute(testZone, "a");
-	}
-	
-	@Test(expected=NoPathAvailibleException.class)
-	public void isConnectedNoPathAvailibleExceptionTest(){
-		testZone = new Zone("test");
-		testMap.addZone(testZone, firstSet);
-		testMap.isConnected(firstZone, testZone);
-	}
-	
-	@Test(expected=NoPathAvailibleException.class)
-	public void howFarItIsNoPathAvailibleExceptionTest(){
-		testZone = new Zone("test");
-		testMap.addZone(testZone, firstSet);
-		testMap.howFarItIs(firstZone, testZone);
-	}
-	
-	@Test(expected=NoSuchAttributeException.class)
-	public void NoSuchAttributeExceptionTest(){
-		testMap.getZonesWithAttribute("notAnAttribute");
-	}
-	
-	@Test
-	public void hasAttributeFalseTest(){
-		assertFalse(testMap.hasAttribute(firstZone, "notAnAttribute"));
-	}
 
 }

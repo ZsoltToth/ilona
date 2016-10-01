@@ -41,7 +41,7 @@
 	
 	<insert id="insertPosition">
 		insert into Position values(
-		#{UUID, typeHandler=UUIDTypeHandler, jdbcType=VARCHAR},
+		#{id, typeHandler=UUIDTypeHandler, jdbcType=VARCHAR},
 		#{coordinate.x},
 		#{coordinate.y},
 		#{coordinate.z},

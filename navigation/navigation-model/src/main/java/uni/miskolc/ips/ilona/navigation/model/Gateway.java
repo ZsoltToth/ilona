@@ -1,56 +1,39 @@
 package uni.miskolc.ips.ilona.navigation.model;
 
+import java.util.UUID;
+
 import org.jgrapht.graph.DefaultEdge;
 
-public class Gateway<V> extends DefaultEdge {
+public class Gateway {
 
-	/**
-	 * 
-	 */
+	private UUID from;
+	private UUID to;
 
-	public static final String ELEVATOR = "Elevator";
-	public static final String VIRTUALGATEWAY = "VirtualGateway";
-	public static final String STAIRCASE = "Staircase";
-	public static final String DOOR = "Door";
-
-	private String gateWayType;
-	private V source;
-	private V target;
-
-	public Gateway(String gateWayType, V source, V target) {
+	public Gateway(UUID from, UUID to) {
 		super();
-		this.gateWayType = gateWayType;
-		this.source = source;
-		this.target = target;
+		this.from = from;
+		this.to = to;
 	}
 
-	public String getGateWayType() {
-		return gateWayType;
+	public UUID getFrom() {
+		return from;
 	}
 
-	public void setGateWayType(String gateWayType) {
-		this.gateWayType = gateWayType;
+	public void setFrom(UUID from) {
+		this.from = from;
 	}
 
-	public V getSource() {
-		return source;
+	public UUID getTo() {
+		return to;
 	}
 
-	public void setSource(V source) {
-		this.source = source;
-	}
-
-	public V getTarget() {
-		return target;
-	}
-
-	public void setTarget(V target) {
-		this.target = target;
+	public void setTo(UUID to) {
+		this.to = to;
 	}
 
 	@Override
 	public String toString() {
-		return "Gateway [gateWayType=" + gateWayType + ", source=" + source + ", target=" + target + "]";
+		return "Gateway [from=" + from + ", to=" + to + "]";
 	}
 
 }

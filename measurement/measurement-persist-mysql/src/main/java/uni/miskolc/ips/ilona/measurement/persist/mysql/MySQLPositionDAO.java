@@ -110,7 +110,6 @@ public class MySQLPositionDAO implements PositionDAO {
 					this.zoneDAO.createZone(position.getZone());
 				}
 			}
-			
 			PositionMapper mapper = session.getMapper(PositionMapper.class);
 			mapper.insertPosition(position);
 			session.commit();

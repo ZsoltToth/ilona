@@ -7,7 +7,9 @@
 	<version>0.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ILONA - Measurement Subsystem</name>
-
+	<properties>
+		<java.version>1.7</java.version>
+	</properties>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -16,9 +18,23 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.2</version>
 					<configuration>
-						<source>1.7</source>
-						<target>1.7</target>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
 					</configuration>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.1</version>
+					<executions>
+						<execution>
+							<id>default-deploy</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -36,13 +52,20 @@
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>snapshots</id>
-			<name>snapshots</name>
-			<url>http://safranek.iit.uni-miskolc.hu:8081/nexus/content/repositories/snapshots/</url>
+			<id>safranek</id>
+			<url>http://safranek.iit.uni-miskolc.hu:8081/nexus/content/repositories/ILONA-Snapshots</url>
 		</snapshotRepository>
+		<repository>
+			<id>safranek</id>
+			<url>http://safranek.iit.uni-miskolc.hu:8081/nexus/content/repositories/ILONA-Releases</url>
+		</repository>
 	</distributionManagement>
 
+
+
+
 	<scm>
-		<url>https://jerry.iit.uni-miskolc.hu/svntzs/ips</url>
+		<url>https://github.com/ZsoltToth/ilona.git</url>
 	</scm>
+
 </project>

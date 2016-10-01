@@ -48,7 +48,13 @@
 			<AppenderRef ref="ControllerLogFile" />
 		</Logger>
 
-		<Logger name="uni.miskolc.ips.ilona.measurement.model"
+		<Logger name="uni.miskolc.ips.ilona.measurement.model" level="info">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="ALL_LOGS_FILE" />
+			<AppenderRef ref="MODEL_LOG_FILE" />
+		</Logger>
+
+		<Logger name="uni.miskolc.ips.ilona.positioning.service.impl.neuralnetwork"
 			level="info">
 			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="ALL_LOGS_FILE" />

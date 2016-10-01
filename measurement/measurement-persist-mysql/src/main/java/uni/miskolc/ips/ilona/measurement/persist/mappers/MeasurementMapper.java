@@ -1,13 +1,19 @@
 package uni.miskolc.ips.ilona.measurement.persist.mappers;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectKey;
 
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
+import uni.miskolc.ips.ilona.measurement.model.measurement.WiFiRSSI;
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
 
 /**
@@ -63,7 +69,9 @@ public interface MeasurementMapper {
 	 *            An ID string of the measurement.
 	 * @return A map based on the measurement ID string.
 	 */
-	Map<String, Double> selectWiFiRSSIForMeasurement(String measId);
+
+	@MapKey("ssid")
+	List<Map<String, Double>> selectWiFiRSSIForMeasurement(@Param("measId") String measId);
 
 	/**
 	 * Deletes a measurement by a measurement ID string.
@@ -76,10 +84,10 @@ public interface MeasurementMapper {
 	/**
 	 * Deletes a measurement by a timestamp.
 	 * 
-	 * @param stamp
+	 * @param timestamp
 	 *            A timestamp of the measurement that needs to be deleted.
 	 */
-	void deleteMeasurementByTimeStamp(Date stamp);
+	void deleteMeasurementByTimeStamp(Date timestamp);
 
 	// TODO implement RFID Tag mapper for myBatis
 	// public Set<byte[]> selectRFIDTagsForMeasurement(String measId);
@@ -115,5 +123,9 @@ public interface MeasurementMapper {
 	 */
 	void insertWiFiRSSI4Measurement(@Param("ssid") String ssid, @Param("rssi") double rssi,
 			@Param("measId") String measId);
+	
+	
+	void insertRFID4Measurement(@Param("rfid") byte[] rfid, @Param("measId") String measId);
+	
 
 }

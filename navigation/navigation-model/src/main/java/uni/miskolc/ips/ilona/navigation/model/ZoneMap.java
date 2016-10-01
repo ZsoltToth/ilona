@@ -9,14 +9,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.ClassBasedEdgeFactory;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 
 import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 
@@ -36,139 +39,75 @@ public class ZoneMap {
 	/**
 	 * 
 	 */
-	private Map<Zone, Set<String>> attributes;
-	private DirectedGraph<Zone, Gateway> zoneGraph;
+	private DirectedGraph<UUID, DefaultEdge> zoneGraph;
 
-	public ZoneMap(Collection<Zone> zones, Map<Zone, Set<String>> attributes) {
+	public ZoneMap(Collection<UUID> iDs,Collection<Gateway> edges) {
 
-		this.attributes = attributes;
-		this.zoneGraph = new DefaultDirectedGraph<Zone, Gateway>(new ClassBasedEdgeFactory<Zone, Gateway>(Gateway.class));
+		this.zoneGraph = new DefaultDirectedGraph<UUID, DefaultEdge>(DefaultEdge.class);
 
-		for (Zone zone : zones) {
+		for (UUID uUID : iDs) {
 
-			this.zoneGraph.addVertex(zone);
+			this.zoneGraph.addVertex(uUID);
 
-			LOG.info(zone.getName() + " added to the graph");
+			//LOG.info(zone.getName() + " added to the graph");
 
 		}
-
-	}
-
-	@Override
-	public String toString() {
-		return "ZoneMap [attributes=" + attributes + ", zoneGraph=" + zoneGraph + "]";
-	}
-
-	public Map<Zone, Set<String>> getAttributes() {
-		return attributes;
-	}
-
-	public void setAttributes(Map<Zone, Set<String>> attributes) {
-		this.attributes = attributes;
-	}
-
-	public Graph<Zone, Gateway> getZoneGraph() {
-		return zoneGraph;
-	}
-
-	public void setZoneGraph(DirectedGraph<Zone, Gateway> zoneGraph) {
-		this.zoneGraph = zoneGraph;
-	}
-
-	public void addZone(Zone zone, Set<String> addedAttributes) {
-		zoneGraph.addVertex(zone);
-		this.attributes.put(zone, addedAttributes);
-
-		LOG.info(zone.getName() + " has been added.");
-	}
-
-	public void addGateWay(Zone sourceZone, Zone targetZone, String gateWayType) {
 		
-		zoneGraph.addEdge(sourceZone, targetZone, new Gateway<Zone>(gateWayType, sourceZone, targetZone));
-		LOG.info("Path between " + sourceZone.getName() + " and " + targetZone.getName() + " added.");
-	}
-
-	public void addAttribute(Zone zone, String attribute) {
-		if (attributes.containsKey(zone) == false) {
-			attributes.put(zone, new HashSet<String>());
+		for (Gateway edge : edges){
+			this.zoneGraph.addEdge(edge.getFrom(), edge.getTo());
 		}
-		attributes.get(zone).add(attribute);
-		LOG.info(attribute + " attribute added to " + zone.getName());
+
+	}
+	
+	/**
+	 * find the path for a singular destination inside the graph
+	 * @param start the uuid of the user's current destination
+	 * @param destination the UUID of the zone to which the user wants to travel
+	 * @return a list of UUIDs which collects the shortest path.
+	 */
+	public List<UUID> findPath(UUID start, UUID destination){
+		List<UUID> result = new ArrayList<UUID>();
+		//System.out.println(start.toString()+ destination.toString());
+		DijkstraShortestPath<UUID, DefaultEdge> path= new DijkstraShortestPath<UUID, DefaultEdge>(zoneGraph, start, destination);
+		result=intoUUID(start,path.getPathEdgeList());
+		//System.out.println(result.toString());
+		return result;
 	}
 
-	public void removeZone(Zone zone) {
-		zoneGraph.removeVertex(zone);
-		LOG.info(zone.getName() + " removed");
-	}
-
-	public void removePath(Zone source, Zone target) {
-		zoneGraph.removeEdge(source, target);
-		LOG.info("path between " + source.getName() + " and " + target.getName() + " removed");
-	}
-
-	public void removeAttribute(Zone zone, String attribute) {
-		Set<String> result = attributes.get(zone);
-		result.remove(attribute);
-		attributes.put(zone, result);
-		LOG.info(attribute + " from" + zone.getName() + " removed");
-	}
-
-	public boolean hasAttribute(Zone zone, String attribute) throws NoSuchZoneException {
-		if (attributes.containsKey(zone)) {
-			return attributes.get(zone).contains(attribute);
-		} else {
-
-			NoSuchZoneException ex = new NoSuchZoneException();
-			LOG.error("exception thrown:", ex);
-			throw ex;
-
-		}
-	}
-
-	public Set<Zone> getZonesWithAttribute(String attribute) throws NoSuchAttributeException {
-		Set<Zone> result = new HashSet<Zone>();
-		for (Zone zone : attributes.keySet()) {
-			if (hasAttribute(zone, attribute)) {
-				result.add(zone);
+	/**
+	 * find the shortest path when there are multiple availible destinations
+	 * @param start the current position of the user
+	 * @param destinations the possible destinations
+	 * @return the shortest path to the closest destination
+	 */
+	public List<UUID> findPath(UUID start, Collection<UUID> destinations){
+		List<UUID> result=new ArrayList<UUID>();
+		DijkstraShortestPath<UUID, DefaultEdge> best = new DijkstraShortestPath<UUID, DefaultEdge>(zoneGraph, start, destinations.iterator().next());
+		for(UUID destination : destinations){
+			DijkstraShortestPath<UUID, DefaultEdge> actual = new DijkstraShortestPath<UUID, DefaultEdge>(zoneGraph, start, destination);
+			if(actual.getPathLength()<best.getPathLength()){
+				best=actual;
 			}
 		}
-		if (result.isEmpty()) {
-			NoSuchAttributeException ex = new NoSuchAttributeException();
-			LOG.error("exception thrown:", ex);
-			throw ex;
-		}
-
-		LOG.info("the following zones have the " + attribute + " attribute:", result);
+		result=intoUUID(start, best.getPathEdgeList());
 		return result;
-
+		
 	}
 
-	public boolean areNeighbours(Zone sourceZone, Zone TargetZone) {
-		return zoneGraph.containsEdge(sourceZone, TargetZone);
 
-	}
-
-	public boolean isConnected(Zone sourceZone, Zone TargetZone) throws NoPathAvailibleException {
-		try {
-			return !DijkstraShortestPath.findPathBetween(zoneGraph, sourceZone, TargetZone).equals(null);
-		} catch (NullPointerException e) {
-			NoPathAvailibleException ex = new NoPathAvailibleException();
-			LOG.error("exception thrown:", ex);
-			throw ex;
+	/**
+	 * Transform the list of edges into a list of UUIDs
+	 * @param start the UUID of the starting zone
+	 * @param edges the list of edges to the destination
+	 * @return a list of UUIDs
+	 */
+	private List<UUID> intoUUID (UUID start, List<DefaultEdge> edges){
+		List<UUID> result = new ArrayList<UUID>();
+		result.add(start);
+		for(DefaultEdge edge : edges){
+			UUID next = zoneGraph.getEdgeTarget(edge);
+			result.add(next);
 		}
-	}
-
-	public int howFarItIs(Zone sourceZone, Zone targetZone) throws NoPathAvailibleException {
-		if (isConnected(sourceZone, targetZone)) {
-			List<Gateway> result = DijkstraShortestPath.findPathBetween(zoneGraph, sourceZone, targetZone);
-			LOG.info("The distance between " + sourceZone.getName() + " and " + targetZone.getName() + " is "
-					+ Integer.toString(result.size()));
-			return result.size();
-		} else {
-			NoPathAvailibleException ex = new NoPathAvailibleException();
-			LOG.error("Exception thrown:", ex);
-			throw ex;
-		}
-
+		return result;
 	}
 }
