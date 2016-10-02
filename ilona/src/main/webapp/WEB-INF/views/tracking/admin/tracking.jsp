@@ -37,6 +37,7 @@
 	var secondFloorMap;
 	
 	var positions;
+	var pathData = {};
 	
 	$(document).ready(function(){
 		try {
@@ -108,6 +109,8 @@
 						clearAndFillSelectElement("adminTrackingDevicesSelect", result);
 						if(result.length != 0) {
 							document.getElementById("adminTrackingSelectDeviceBTN").disabled = false;
+						} else {
+							document.getElementById("adminTrackingSelectDeviceBTN").disabled = true;
 						}
 						$("#adminTrackingDevicesPanelHeader").html("Devices: " + value);
 					} catch(error) {
@@ -148,6 +151,117 @@
 		}
 	}
 	
+	$("#adminTrackingActualPositionPathOnOffBTN").click(function(event){
+		try {
+			var posId = $(this).attr("data-id");
+			var posPathData = pathData[posId];
+			console.log(posPathData);
+			var positionStart;
+			var positionEnd;
+			
+			var length = positions.length;
+			var iteration;
+			var i = 0;
+			for (i; i < length; i++) {
+				if(positions[i].position.uuid == posId) {
+					positionStart = positions[i];
+					if (i + 1 < length) {
+						positionEnd = positions[i + 1];
+					}
+					iteration = i;
+					break;				
+				}
+			}
+			console.log(i);
+			if( !(iteration + 1 < length)) {
+				console.log("");
+				return;
+			}
+			
+			if(typeof posPathData == "undefined") {
+				var url = "<c:url value='/tracking/admin/tracking/calculatepath'></c:url>";
+				
+				var startFloor = calculateFloor(positionStart);
+				var endFloor = calculateFloor(positionEnd);
+				
+				if(startFloor == endFloor) {
+					var startNode = calculateNearestNode(positionStart, startFloor);
+					var endNode = calculateNearestNode(positionEnd, endFloor);
+					generatePathData(startNode.id, endNode.id, url, positionStart, positionEnd);
+				} else {
+					// different floor
+					console.log("different floor!");
+				}
+				return;
+			}
+			
+			if (posPathData.visible == true) {
+				console.log("visible!");
+				//d3.select(posPathData.path).remove();
+				posPathData.path.remove();
+				posPathData.path = null;
+				posPathData.visible = false;
+			}
+			
+		} catch(error) {
+			console.log(error);
+		}
+	});
+	
+	function generatePathData(startNode, endNode, url, startPosition, endPosition) {
+		try {
+			$.ajax({
+				type : "POST",
+				async : true,
+				timeout : 10000,
+				url : url,
+				beforeSend : function(xhr) {
+					xhr.setRequestHeader($("meta[name='_csrf_header']")
+							.attr("content"), $("meta[name='_csrf']").attr(
+							"content"));
+				},
+				data : {
+					start : startNode,
+					end : endNode,
+					floor : calculateFloor(startPosition)
+				},
+				success : function(result, status, xhr) {
+					try {
+						var points = generatePathInputData(startPosition, endPosition, result);
+						var floorMap;
+						
+						var floorNumber = calculateFloor(startPosition);
+						switch(floorNumber) {
+						case 0: floorMap = groundFloorMap; break;
+						case 1: floorMap = firstFloorMap; break;
+						default: floorMap = secondFloorMap; break;
+						}
+						
+						var path = drawPath(floorMap, points);
+						var id = startPosition.position.uuid;
+						console.log(points);
+						console.log(path);
+						pathData[id] = {
+								curve : points,
+								visible : true,
+								path : path,
+								map : floorMap,
+
+						};
+											
+					} catch (error) {
+						console.log(error);
+					}
+				},
+				error : function(xhr, status, error) {
+					console.log(error);
+				}
+			});
+		} catch (error) {
+			throw "Function :: generatePathData Error: " + error;
+		}
+	}
+	
 	$("#adminTrackingSelectDeviceBTN").click(function(event){
 		try {
 			event.preventDefault();
@@ -155,6 +269,7 @@
 			var toValue = document.getElementById("adminTrackingToDateTime").value;
 			if (fromValue.length == 0 || toValue.length == 0) {
 				return;
+				// error?!
 			}
 			var dateFrom = new Date(fromValue);
 			var dateTo = new Date(toValue);
@@ -190,12 +305,14 @@
 								var i = 0;
 								var actualId = d3.select(this).attr("data-id");
 								for (i; i < length; i++) {
-									if(positions[i].position.uuid) {
+									if(positions[i].position.uuid == actualId) {
 										$("#adminTrackingActualPositionId").val(actualId);
 										$("#adminTrackingActualPositionZoneName")
 											.val(positions[i].position.zone.id);
 										$("#adminTrackingActualPositionTimestamp")	
 											.val(new Date(positions[i].date));
+										$("#adminTrackingActualPositionPathOnOffBTN")
+											.attr("data-id", positions[i].position.uuid);
 									}
 								}
 							} catch(error) {
@@ -211,6 +328,7 @@
 						//drawArea(firstFloorMap, ZonesFirstFloor);
 						//drawArea(secondFloorMap, ZonesSecondFloor);
 						var url = "<c:url value='/tracking/admin/tracking/calculatepath'></c:url>";
+						/*
 						generatePath(positions, url, function(startPos, points) {
 							try {
 								var floor = calculateFloor(startPos);
@@ -229,6 +347,7 @@
 								console.log(error);
 							}
 						});
+						*/
 					} catch(error) {
 						console.log(error);
 					}
@@ -317,6 +436,14 @@
 				  		<br />
 				  		<label for="adminTrackingActualPositionTimestamp">Time:</label>
 				  		<input class="form-control" type="text" id="adminTrackingActualPositionTimestamp" readonly="readonly">
+				  		<br />
+				  		<label>Path to the next position!</label>
+				  		<input class="btn btn-default" type="button" id="adminTrackingActualPositionPathOnOffBTN"
+				  			value="Path On / Off">
+				  		<label>Previous position!</label>
+				  		<input class="btn btn-default" type="button" id="" value="Previous position">
+				  		<label>Next position!</label>
+				  		<input class="btn btn-default" type="button" id="" value="Next position">
 				  	</div>
 			  	</div>	
 			</div>		

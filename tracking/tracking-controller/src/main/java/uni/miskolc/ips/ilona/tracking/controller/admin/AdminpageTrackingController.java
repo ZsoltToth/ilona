@@ -103,7 +103,6 @@ public class AdminpageTrackingController {
 				///trackingDAO.storePosition(dev, pos);
 			}
 			
-			trackingDAO.readPosition("aaaa");
 			return positions;
 		} catch (Exception e) {
 			logger.error("Service error! Cause: " + e.getMessage());

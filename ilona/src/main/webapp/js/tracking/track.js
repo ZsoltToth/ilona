@@ -335,8 +335,8 @@ function drawPath(floorMap, data) {
 		}).y(function(d) {
 			return d.y;
 		}).curve(d3.curveCatmullRom.alpha(0.5))// .curve(d3.curveBasis); // v4
-		floorMap.append("path").attr("d", lineGrapha(data)).attr("stroke",
-				"blue").attr("stroke-width", 2).attr("fill", "none");
+		return floorMap.append("path").attr("d", lineGrapha(data)).attr("stroke",
+				"blue").attr("stroke-width", 2).attr("fill", "none");		
 	} catch (error) {
 		throw "Function :: drawPath Error: " + error;
 	}
@@ -368,3 +368,5 @@ function generateDateTimePickerValue() {
 		throw "Function :: generateDateTimePickerValue Error: " + error;
 	}
 }
+
+
