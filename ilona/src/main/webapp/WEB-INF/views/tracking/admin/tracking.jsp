@@ -26,7 +26,7 @@
 	var firstFloorImageSource = "<c:url value='/img/firstFloor.jpg'></c:url>";
 	var secondFloorImageSource = "<c:url value='/img/secondFloor.jpg'></c:url>";
 	var markerImageSource = "<c:url value='/img/marker.png'></c:url>";
-	
+	var markerSelectedSource = "<c:url value='/img/markerSelected.png'></c:url>";
 	var floorMapSVG;
 	
 	var graphPontCircleRadius = 3;
@@ -37,7 +37,9 @@
 	var secondFloorMap;
 	
 	var positions;
+	var positionsImages;
 	var pathData = {};
+	var selectedPositionImage;
 	
 	$(document).ready(function(){
 		try {
@@ -172,7 +174,7 @@
 					break;				
 				}
 			}
-			console.log(i);
+
 			if( !(iteration + 1 < length)) {
 				console.log("");
 				return;
@@ -187,20 +189,39 @@
 				if(startFloor == endFloor) {
 					var startNode = calculateNearestNode(positionStart, startFloor);
 					var endNode = calculateNearestNode(positionEnd, endFloor);
-					generatePathData(startNode.id, endNode.id, url, positionStart, positionEnd);
+					generatePathData(startNode.id, endNode.id, url, positionStart, positionEnd, 0);
 				} else {
-					// different floor
-					console.log("different floor!");
+					var startNode = calculateNearestNode(positionStart, startFloor);
+					var floorConnectionNode = getFloorConnectionNodeByValue(startFloor);
+					generatePathData(startNode.id, floorConnectionNode.id, url, positionStart, positionEnd, 1);
+					
+					var endNode = calculateNearestNode(positionEnd, endFloor);
+					floorConnectionNode = getFloorConnectionNodeByValue(endFloor);
+					generatePathData(floorConnectionNode.id, endNode.id, url, positionStart, positionEnd, 2);
 				}
 				return;
 			}
 			
 			if (posPathData.visible == true) {
-				console.log("visible!");
-				//d3.select(posPathData.path).remove();
-				posPathData.path.remove();
-				posPathData.path = null;
+				var i = 0;
+				var length = posPathData.curveData.length;
+				var curves = posPathData.curveData;
+				for (i; i < length; i++) {
+					curves[i].path.remove();
+					curves[i].path = null;
+				}
 				posPathData.visible = false;
+				return;
+			}
+			
+			if(posPathData.visible == false) {
+				posPathData.visible = true;
+				var i = 0;
+				var length = posPathData.curveData.length;
+				var curves = posPathData.curveData;
+				for (i; i < length; i++) {
+					curves[i].path = drawPath(curves[i].floorMap, curves[i].points);
+				}				
 			}
 			
 		} catch(error) {
@@ -208,8 +229,15 @@
 		}
 	});
 	
-	function generatePathData(startNode, endNode, url, startPosition, endPosition) {
+	function generatePathData(startNode, endNode, url, startPosition, endPosition, mode) {
 		try {
+			var floorNumber;
+			switch(mode) {
+			case 0: floorNumber = calculateFloor(startPosition); break;
+			case 1: floorNumber = calculateFloor(startPosition); break;
+			case 2: floorNumber = calculateFloor(endPosition); break;
+			default: throw "invalid mode!";
+			}
 			$.ajax({
 				type : "POST",
 				async : true,
@@ -223,31 +251,91 @@
 				data : {
 					start : startNode,
 					end : endNode,
-					floor : calculateFloor(startPosition)
+					floor : floorNumber 
 				},
 				success : function(result, status, xhr) {
 					try {
-						var points = generatePathInputData(startPosition, endPosition, result);
+						var points;
 						var floorMap;
+						var path;
 						
-						var floorNumber = calculateFloor(startPosition);
+						if(mode == 2) {
+							
+							points = generatePathInputDataEndPosOnly(endPosition, result);
+							switch(floorNumber) {
+							case 0: floorMap = groundFloorMap; break;
+							case 1: floorMap = firstFloorMap; break;
+							default: floorMap = secondFloorMap; break;
+							}
+							path = drawPath(floorMap, points);
+							var curveData = {
+									path : path,
+									points : points,
+									floorMap : floorMap
+							}
+							var id = startPosition.position.uuid;
+							var curve = pathData[id];
+							if(typeof curve == "undefined") {
+								pathData[id] = {
+										visible : true,
+										curveData : [curveData]
+								}
+							} else {
+								curve.curveData.push(curveData);
+							}
+							return;
+						}
+						
+						if(mode == 1) {
+							points = generatePathInputDataStartPosOnly(startPosition, result);
+							switch(floorNumber) {
+							case 0: floorMap = groundFloorMap; break;
+							case 1: floorMap = firstFloorMap; break;
+							default: floorMap = secondFloorMap; break;
+							}
+							path = drawPath(floorMap, points);
+							var curveData = {
+									path : path,
+									points : points,
+									floorMap : floorMap
+							}
+							var id = startPosition.position.uuid;
+							var curve = pathData[id];
+							if(typeof curve == "undefined") {
+								pathData[id] = {
+										visible : true,
+										curveData : [curveData]
+								}
+							} else {
+								curve.curveData.push(curveData);
+							}
+							return;
+						}
+						
+						// both not null
+						points = generatePathInputData(startPosition, endPosition, result);
 						switch(floorNumber) {
 						case 0: floorMap = groundFloorMap; break;
 						case 1: floorMap = firstFloorMap; break;
 						default: floorMap = secondFloorMap; break;
 						}
-						
-						var path = drawPath(floorMap, points);
-						var id = startPosition.position.uuid;
-						console.log(points);
-						console.log(path);
-						pathData[id] = {
-								curve : points,
-								visible : true,
+						path = drawPath(floorMap, points);
+						var curveData = {
 								path : path,
-								map : floorMap,
-
-						};
+								points : points,
+								floorMap : floorMap
+						}
+						var id = startPosition.position.uuid;
+						var curve = pathData[id];
+						if(typeof curve == "undefined") {
+							pathData[id] = {
+									visible : true,
+									curveData : [curveData]
+							}
+						} else {
+							curve.curveData.push(curveData);
+						}
+						return;
 											
 					} catch (error) {
 						console.log(error);
@@ -261,6 +349,81 @@
 			throw "Function :: generatePathData Error: " + error;
 		}
 	}
+	
+	$("#adminTrackingActualPositionPreviousPosBTN").click(function(event){
+		try {
+			var length = positions.length;
+			var i = 0;
+			var actualId = $(this).attr("data-id");
+			for (i; i < length; i++) {
+				if(positions[i].position.uuid == actualId) {
+					if(i == 0) {
+						// LEFT STOP!
+					} else {
+						var prevActualId = positions[i - 1];
+						$("#adminTrackingActualPositionId").val(prevActualId.position.uuid);
+						$("#adminTrackingActualPositionZoneName")
+							.val(prevActualId.position.zone.id);
+						$("#adminTrackingActualPositionTimestamp")	
+							.val(new Date(prevActualId.date));
+						$("#adminTrackingActualPositionPathOnOffBTN")
+							.attr("data-id", prevActualId.position.uuid);
+						$("#adminTrackingActualPositionPreviousPosBTN").attr("data-id", prevActualId.position.uuid);
+						$("#adminTrackingActualPositionNextPosBTN").attr("data-id", prevActualId.position.uuid);
+						if (typeof selectedPositionImage != "undefined") {
+							//d3.select(selectedPositionImage)
+						}
+					}
+					
+				}
+			}
+		} catch(error) {
+			console.log(error);
+		}
+	});
+	
+	$("#adminTrackingActualPositionNextPosBTN").click(function(event){
+		try {
+			var length = positions.length;
+			var i = 0;
+			var actualId = $(this).attr("data-id");
+			for (i; i < length; i++) {
+				if(positions[i].position.uuid == actualId) {
+					if(i == length - 1) {
+						// LEFT STOP!
+					} else {
+						var prevActualId = positions[i + 1];
+						$("#adminTrackingActualPositionId").val(prevActualId.position.uuid);
+						$("#adminTrackingActualPositionZoneName")
+							.val(prevActualId.position.zone.id);
+						$("#adminTrackingActualPositionTimestamp")	
+							.val(new Date(prevActualId.date));
+						$("#adminTrackingActualPositionPathOnOffBTN")
+							.attr("data-id", prevActualId.position.uuid);
+						$("#adminTrackingActualPositionPreviousPosBTN").attr("data-id", prevActualId.position.uuid);
+						$("#adminTrackingActualPositionNextPosBTN").attr("data-id", prevActualId.position.uuid);
+						var j = 0;
+						var lengthImages = positionsImages.length;
+						var actualPosImage;
+						var nextPosImage;
+						for (j; j < lengthImages; j++) {
+							if(positionsImages[j].attr("data-id") == positions[i + 1].position.uuid) {
+								nextPosImage = positionsImages[j];
+							}
+							if(positionsImages[j].attr("data-id") == positions[i].position.uuid) {
+								actualPosImage = positionsImages[j];
+							}
+						}
+						actualPosImage.attr("xlink:href", markerImageSource);
+						nextPosImage.attr("xlink:href", markerSelectedSource);
+					}
+					
+				}
+			}
+		} catch(error) {
+			console.log(error);
+		}
+	});
 	
 	$("#adminTrackingSelectDeviceBTN").click(function(event){
 		try {
@@ -298,7 +461,7 @@
 						resetFloors();
 						adminTrackingPositionsTable.clear().draw();
 						fillDataTableWithValues(adminTrackingPositionsTable, positions);
-						drawPositions(positions, [groundFloorMap, firstFloorMap, secondFloorMap], markerImageSource,
+						positionsImages = drawPositions(positions, [groundFloorMap, firstFloorMap, secondFloorMap], markerImageSource,
 								function() {
 							try {
 								var length = positions.length;
@@ -312,7 +475,15 @@
 										$("#adminTrackingActualPositionTimestamp")	
 											.val(new Date(positions[i].date));
 										$("#adminTrackingActualPositionPathOnOffBTN")
-											.attr("data-id", positions[i].position.uuid);
+											.attr("data-id", actualId);
+										$("#adminTrackingActualPositionPreviousPosBTN").attr("data-id", actualId);
+										$("#adminTrackingActualPositionNextPosBTN").attr("data-id", actualId);
+										if(typeof selectedPositionImage == "undefined") {
+											selectedPositionImage = d3.select(this).attr("xlink:href", markerSelectedSource);
+										} else {
+											selectedPositionImage.attr("xlink:href", markerImageSource);
+											selectedPositionImage = d3.select(this).attr("xlink:href", markerSelectedSource);
+										}
 									}
 								}
 							} catch(error) {
@@ -326,28 +497,7 @@
 						//drawGraphPoints(secondFloorMap, graphNodesSecondFloor);
 						//drawArea(groundFloorMap, ZonesGroundFloor);
 						//drawArea(firstFloorMap, ZonesFirstFloor);
-						//drawArea(secondFloorMap, ZonesSecondFloor);
-						var url = "<c:url value='/tracking/admin/tracking/calculatepath'></c:url>";
-						/*
-						generatePath(positions, url, function(startPos, points) {
-							try {
-								var floor = calculateFloor(startPos);
-								switch(floor) {
-								case 0: 
-									drawPath(groundFloorMap, points);
-									break;
-								case 1:
-									drawPath(firstFloorMap, points);
-									break;
-								default:
-									drawPath(secondFloorMap, points);
-									break;
-								}
-							} catch(error) {
-								console.log(error);
-							}
-						});
-						*/
+						//drawArea(secondFloorMap, ZonesSecondFloor);					
 					} catch(error) {
 						console.log(error);
 					}
@@ -440,10 +590,12 @@
 				  		<label>Path to the next position!</label>
 				  		<input class="btn btn-default" type="button" id="adminTrackingActualPositionPathOnOffBTN"
 				  			value="Path On / Off">
+				  		<br />
 				  		<label>Previous position!</label>
-				  		<input class="btn btn-default" type="button" id="" value="Previous position">
+				  		<input class="btn btn-default" type="button" id="adminTrackingActualPositionPreviousPosBTN" value="Previous position">
+				  		<br />
 				  		<label>Next position!</label>
-				  		<input class="btn btn-default" type="button" id="" value="Next position">
+				  		<input class="btn btn-default" type="button" id="adminTrackingActualPositionNextPosBTN" value="Next position">
 				  	</div>
 			  	</div>	
 			</div>		

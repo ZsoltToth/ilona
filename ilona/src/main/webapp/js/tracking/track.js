@@ -104,6 +104,7 @@ function createMap(div, imageSource) {
 function drawPositions(positions, floors, marker, clickHandler) {
 	try {
 		var length = positions.length;
+		var positionStore = [];
 		var i = 0;
 		for (i; i < length; i++) {
 			var z = positions[i].position.coordinate.z;
@@ -112,31 +113,31 @@ function drawPositions(positions, floors, marker, clickHandler) {
 			if (z <= 3) {
 				floors[0].append("circle").attr("cx", posX).attr("cy", posY)
 						.attr("r", 5);
-				floors[0].append("image").attr("xlink:href", marker).attr("x",
-						posX - 15).attr("y", posY - 30).attr("width", 30).attr(
-						"height", 30).attr("data-id",
-						positions[i].position.uuid).on("click", clickHandler);
+				positionStore.push(floors[0].append("image").attr("xlink:href",
+						marker).attr("x", posX - 15).attr("y", posY - 30).attr(
+						"width", 30).attr("height", 30).attr("data-id",
+						positions[i].position.uuid).on("click", clickHandler));
 				continue;
 			}
 
 			if (3 < z && z <= 6) {
 				floors[1].append("circle").attr("cx", posX).attr("cy", posY)
 						.attr("r", 5);
-				floors[1].append("image").attr("xlink:href", marker).attr("x",
-						posX - 15).attr("y", posY - 30).attr("width", 30).attr(
-						"height", 30).attr("data-id",
-						positions[i].position.uuid).on("click", clickHandler);
+				positionStore.push(floors[1].append("image").attr("xlink:href",
+						marker).attr("x", posX - 15).attr("y", posY - 30).attr(
+						"width", 30).attr("height", 30).attr("data-id",
+						positions[i].position.uuid).on("click", clickHandler));
 				continue;
 			}
 
 			floors[2].append("circle").attr("cx", posX).attr("cy", posY).attr(
 					"r", 5);
-			floors[2].append("image").attr("xlink:href", marker).attr("x",
-					posX - 15).attr("y", posY - 30).attr("width", 30).attr(
-					"height", 30).attr("data-id", positions[i].position.uuid)
-					.on("click", clickHandler);
-
+			positionStore.push(floors[2].append("image").attr("xlink:href",
+					marker).attr("x", posX - 15).attr("y", posY - 30).attr(
+					"width", 30).attr("height", 30).attr("data-id",
+					positions[i].position.uuid).on("click", clickHandler));
 		}
+		return positionStore;
 	} catch (error) {
 		throw "Function :: drawPositions Error: " + error;
 	}
@@ -303,6 +304,7 @@ function getThePathFromTheServer(startPos, endPos, url, pointsHandler) {
 
 function generatePathInputData(startPos, endPos, pathPoints) {
 	try {
+
 		nodes = getNodesByNumber(calculateFloor(startPos));
 		var points = [];
 		points.push({
@@ -328,6 +330,52 @@ function generatePathInputData(startPos, endPos, pathPoints) {
 	}
 }
 
+function generatePathInputDataStartPosOnly(startPos, pathPoints) {
+	try {
+		nodes = getNodesByNumber(calculateFloor(startPos));
+		var points = [];
+		points.push({
+			"x" : trackCalculateX(startPos.position.coordinate.x),
+			"y" : trackCalculateY(startPos.position.coordinate.y)
+		});
+		var length = pathPoints.length;
+		var i = 0;
+		for (i; i < length; i++) {
+			var point = nodes[pathPoints[i]];
+			points.push({
+				"x" : point.posX,
+				"y" : point.posY
+			})
+		}
+		return points;
+	} catch (error) {
+		throw "Function :: generatePathInputDataStartPosOnly Error: " + error;
+	}
+}
+
+function generatePathInputDataEndPosOnly(endPos, pathPoints) {
+	try {
+		nodes = getNodesByNumber(calculateFloor(endPos));
+		var points = [];
+		var length = pathPoints.length;
+		var i = 0;
+		for (i; i < length; i++) {
+			var point = nodes[pathPoints[i]];
+			points.push({
+				"x" : point.posX,
+				"y" : point.posY
+			})
+		}
+		points.push({
+			"x" : trackCalculateX(endPos.position.coordinate.x),
+			"y" : trackCalculateY(endPos.position.coordinate.y)
+		});
+		return points;
+	} catch (error) {
+		throw "Function :: generatePathInputDataStartPosOnly Error: " + error;
+	}
+}
+
 function drawPath(floorMap, data) {
 	try {
 		var lineGrapha = d3.line().x(function(d) {
@@ -335,10 +383,27 @@ function drawPath(floorMap, data) {
 		}).y(function(d) {
 			return d.y;
 		}).curve(d3.curveCatmullRom.alpha(0.5))// .curve(d3.curveBasis); // v4
-		return floorMap.append("path").attr("d", lineGrapha(data)).attr("stroke",
-				"blue").attr("stroke-width", 2).attr("fill", "none");		
+		return floorMap.append("path").attr("d", lineGrapha(data)).attr(
+				"stroke", "blue").attr("stroke-width", 2).attr("fill", "none");
 	} catch (error) {
 		throw "Function :: drawPath Error: " + error;
+	}
+}
+
+function getFloorConnectionNodeByValue(floorNumber) {
+	try {
+		switch (floorNumber) {
+		case 0:
+			return graphNodesGroundFloor["LEFTCORRIDOR_STAIR"];
+		case 1:
+			return graphNodesFirstFloor["LEFTCORRIDOR_STAIR"];
+		case 2:
+			return graphNodesSecondFloor["LEFTCORRIDOR_STAIR"];
+		default:
+			throw "Invalid floor number!"
+		}
+	} catch (error) {
+		throw "Function :: getFloorConnectionNodeByValue Error: " + error;
 	}
 }
 
@@ -368,5 +433,3 @@ function generateDateTimePickerValue() {
 		throw "Function :: generateDateTimePickerValue Error: " + error;
 	}
 }
-
-
