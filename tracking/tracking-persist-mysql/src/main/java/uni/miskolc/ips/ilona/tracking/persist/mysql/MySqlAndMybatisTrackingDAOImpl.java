@@ -66,7 +66,7 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 			double trackTime = (new Date()).getTime() * 0.001;
 
 			TrackMapper mapper = session.getMapper(TrackMapper.class);
-			mapper.storePositionLocation(device.getDeviceid(), positionid.toString(), trackTime);
+			mapper.storePositionLocation(deviceid, positionid.toString(), trackTime);
 
 			mapper.storePosition(position.getUUID().toString(), coord.getX(), coord.getY(), coord.getZ(),
 					zone.getId().toString(), zone.getName());

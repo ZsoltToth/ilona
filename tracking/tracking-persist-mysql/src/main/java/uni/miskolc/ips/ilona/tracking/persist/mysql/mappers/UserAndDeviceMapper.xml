@@ -63,7 +63,7 @@
 	<select id="getDevice" resultMap="DeviceDataResult">
 		select deviceid,
 		devicename, devicetype, devicetypename from TrackingDevices where
-		deviceid = #{deviceid};
+		deviceid = #{deviceid} and ownerid = #{userid};
 	</select>
 
 	<select id="getUserDevices" resultMap="DeviceDataResult">

@@ -43,7 +43,7 @@ public class AdminpageTrackingController {
 
 	@Resource(name = "trackingDAO")
 	private TrackingDAO trackingDAO;
-	
+
 	@RequestMapping(value = "/trackingmainpage", method = { RequestMethod.POST })
 	public ModelAndView createTrackingMainpage() {
 		ModelAndView mav = new ModelAndView("tracking/admin/tracking");
@@ -55,7 +55,7 @@ public class AdminpageTrackingController {
 			}
 			mav.addObject("userids", userids);
 		} catch (Exception e) {
-
+			mav.addObject("error", "Service error!");
 		}
 		return mav;
 	}
@@ -80,29 +80,35 @@ public class AdminpageTrackingController {
 
 	@RequestMapping(value = "/tracking/getpositions", method = { RequestMethod.POST })
 	@ResponseBody
-	public Collection<PositionTrackDTO> getPositionsForDeviceHandler() throws TrackingServiceErrorException {
+	public Collection<PositionTrackDTO> getPositionsForDeviceHandler(@RequestParam(value = "ownerid") String ownerid,
+			@RequestParam(value = "deviceid") String deviceid, @RequestParam(value = "from") long from,
+			@RequestParam(value = "to") long to) throws TrackingServiceErrorException {
 		try {
-			int count = 10;
+			/*
+			 * int count = 10; Collection<PositionTrackDTO> positions = new
+			 * ArrayList<PositionTrackDTO>(); for (int i = 0; i < count; i++) {
+			 * Coordinate coord = new Coordinate(); coord.setX(Math.random() *
+			 * 50); coord.setY(Math.random() * 28); coord.setZ(Math.random() *
+			 * 10); Position pos = new Position(coord); Zone zone = new
+			 * Zone("Zone-" + Math.random()); pos.setZone(zone);
+			 * PositionTrackDTO dto = new PositionTrackDTO();
+			 * dto.setPosition(pos); long randomTime = new Date().getTime() -
+			 * (long) Math.round(Math.random() * 10_000_000D); dto.setDate(new
+			 * Date(randomTime)); positions.add(dto);
+			 * 
+			 * // DeviceData dev = new DeviceData(); //
+			 * dev.setDeviceid("dev002"); /// trackingDAO.storePosition(dev,
+			 * pos); }
+			 */
+
+			UserData user = userAndDeviceService.getUser(ownerid);
+			DeviceData devData = userAndDeviceService.readDevice(deviceid, user);
+			Collection<TrackPosition> trackPos = trackingDAO.restorePositionsInterval(devData, new Date(from),
+					new Date(to));
 			Collection<PositionTrackDTO> positions = new ArrayList<PositionTrackDTO>();
-			for (int i = 0; i < count; i++) {
-				Coordinate coord = new Coordinate();
-				coord.setX(Math.random() * 50);
-				coord.setY(Math.random() * 28);
-				coord.setZ(Math.random() * 10);
-				//coord.setZ(Math.random() + 1);
-				Position pos = new Position(coord);
-				Zone zone = new Zone("Zone-" + Math.random());
-				pos.setZone(zone);
-				PositionTrackDTO dto = new PositionTrackDTO();
-				dto.setPosition(pos);
-				long randomTime = new Date().getTime() - (long) Math.round(Math.random() * 10_000_000D);
-				dto.setDate(new Date(randomTime));
-				positions.add(dto);
-				//DeviceData dev = new DeviceData();
-				//dev.setDeviceid("dev002");
-				///trackingDAO.storePosition(dev, pos);
+			for (TrackPosition pos : trackPos) {
+				positions.add(PositionTrackDTO.convertToDTO(pos));
 			}
-			
 			return positions;
 		} catch (Exception e) {
 			logger.error("Service error! Cause: " + e.getMessage());
@@ -113,13 +119,13 @@ public class AdminpageTrackingController {
 	@RequestMapping(value = "/tracking/calculatepath", method = { RequestMethod.POST })
 	@ResponseBody
 	public Collection<String> calculatePath(@RequestParam(value = "start") String start,
-			@RequestParam(value = "end") String end, @RequestParam("floor") int floor) {
+			@RequestParam(value = "end") String end, @RequestParam("floor") int floor)
+			throws TrackingServiceErrorException {
 		try {
 			return graphFunctions.generateShortestPath(start, end, floor);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new TrackingServiceErrorException();
 		}
-		return null;
 	}
 
 	@ExceptionHandler(TrackingServiceErrorException.class)

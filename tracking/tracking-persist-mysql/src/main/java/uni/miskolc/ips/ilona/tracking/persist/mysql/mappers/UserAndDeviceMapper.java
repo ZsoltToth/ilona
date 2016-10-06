@@ -64,7 +64,7 @@ public interface UserAndDeviceMapper {
 
 	int storeDevice(@Param(value = "device") DeviceData device, @Param(value = "user") UserData user);
 
-	DeviceData getDevice(@Param(value = "deviceid") String deviceud);
+	DeviceData getDevice(@Param(value = "deviceid") String deviceid, @Param(value = "userid") String userid);
 
 	Collection<DeviceData> getUserDevices(@Param("user") UserData user);
 

@@ -41,6 +41,10 @@
 	var pathData = {};
 	var selectedPositionImage;
 	
+	var adminTrackingSelectUserLock = true;
+	var adminTrackingSelectDeviceLock = true;
+	var adminTrackingGetPathLock = true;
+	
 	$(document).ready(function(){
 		try {
 			adminTrackingPositionsTable = $("#adminTrackingPositionsTable").DataTable({
@@ -89,8 +93,14 @@
 	
 			
 	$("#adminTrackingSelectUsersBTN").click(function(event){
-		try {
+		try {			
 			event.preventDefault();
+			if(adminTrackingSelectUserLock == true) {
+				adminTrackingSelectUserLock = false;
+			} else {
+				return;
+			}
+			$("#adminTrackingSelectionErrorDIV").html("");
 			var token = $("meta[name='_csrf']").attr("content");
 			var header = $("meta[name='_csrf_header']").attr("content");
 			
@@ -108,6 +118,7 @@
 				},
 				success : function(result, status, xhr) {
 					try {
+						adminTrackingSelectUserLock = true;
 						clearAndFillSelectElement("adminTrackingDevicesSelect", result);
 						if(result.length != 0) {
 							document.getElementById("adminTrackingSelectDeviceBTN").disabled = false;
@@ -115,15 +126,21 @@
 							document.getElementById("adminTrackingSelectDeviceBTN").disabled = true;
 						}
 						$("#adminTrackingDevicesPanelHeader").html("Devices: " + value);
+						$("#adminTrackingDeviceOwnerIdHIDDEN").val(value);
+						resetFloors();
 					} catch(error) {
+						$("#adminTrackingSelectionErrorDIV").html(getTrackErrorMessage("Service error!"));
 						console.log(error);
 					}
 				},
 				error : function(xhr, status, error) {
-					alert("ERROR!");
+					adminTrackingSelectUserLock = true;
+					$("#adminTrackingSelectionErrorDIV").html(getTrackErrorMessage("Service error!"));
 				}
 			});
 		} catch(error) {
+			adminTrackingSelectUserLock = true;
+			$("#adminTrackingSelectionErrorDIV").html(getTrackErrorMessage("Service error!"));
 			console.log(error);
 		}	
 	});
@@ -155,6 +172,11 @@
 	
 	$("#adminTrackingActualPositionPathOnOffBTN").click(function(event){
 		try {
+			if(adminTrackingGetPathLock == true) {
+				adminTrackingGetPathLock = false;
+			} else {
+				return;
+			}
 			var posId = $(this).attr("data-id");
 			var posPathData = pathData[posId];
 			console.log(posPathData);
@@ -211,6 +233,7 @@
 					curves[i].path = null;
 				}
 				posPathData.visible = false;
+				adminTrackingGetPathLock = true;
 				return;
 			}
 			
@@ -223,8 +246,10 @@
 					curves[i].path = drawPath(curves[i].floorMap, curves[i].points);
 				}				
 			}
+			adminTrackingGetPathLock = true;
 			
 		} catch(error) {
+			adminTrackingGetPathLock = true;
 			console.log(error);
 		}
 	});
@@ -255,6 +280,7 @@
 				},
 				success : function(result, status, xhr) {
 					try {
+						adminTrackingGetPathLock = true;
 						var points;
 						var floorMap;
 						var path;
@@ -338,14 +364,17 @@
 						return;
 											
 					} catch (error) {
+						adminTrackingGetPathLock = true;
 						console.log(error);
 					}
 				},
 				error : function(xhr, status, error) {
+					adminTrackingGetPathLock = true;
 					console.log(error);
 				}
 			});
 		} catch (error) {
+			adminTrackingGetPathLock = true;
 			throw "Function :: generatePathData Error: " + error;
 		}
 	}
@@ -370,11 +399,23 @@
 							.attr("data-id", prevActualId.position.uuid);
 						$("#adminTrackingActualPositionPreviousPosBTN").attr("data-id", prevActualId.position.uuid);
 						$("#adminTrackingActualPositionNextPosBTN").attr("data-id", prevActualId.position.uuid);
-						if (typeof selectedPositionImage != "undefined") {
-							//d3.select(selectedPositionImage)
+						var j = 0;
+						var lengthImages = positionsImages.length;
+						var actualPosImage;
+						var prevPosImage;
+						for (j; j < lengthImages; j++) {
+							if(positionsImages[j].attr("data-id") == positions[i - 1].position.uuid) {
+								prevPosImage = positionsImages[j];
+							}
+							if(positionsImages[j].attr("data-id") == positions[i].position.uuid) {
+								actualPosImage = positionsImages[j];
+							}
 						}
-					}
-					
+						selectedPositionImage.attr("xlink:href", markerImageSource);
+						selectedPositionImage = prevPosImage;
+						actualPosImage.attr("xlink:href", markerImageSource);
+						prevPosImage.attr("xlink:href", markerSelectedSource);
+					}				
 				}
 			}
 		} catch(error) {
@@ -414,6 +455,8 @@
 								actualPosImage = positionsImages[j];
 							}
 						}
+						selectedPositionImage.attr("xlink:href", markerImageSource);
+						selectedPositionImage = nextPosImage;
 						actualPosImage.attr("xlink:href", markerImageSource);
 						nextPosImage.attr("xlink:href", markerSelectedSource);
 					}
@@ -428,12 +471,26 @@
 	$("#adminTrackingSelectDeviceBTN").click(function(event){
 		try {
 			event.preventDefault();
+			
+			if(adminTrackingSelectDeviceLock == true) {
+				adminTrackingSelectDeviceLock = false;
+			} else {
+				return;
+			}
+			$("#adminTrackingSelectionErrorDIV").html("");
 			var fromValue = document.getElementById("adminTrackingFromDateTime").value;
 			var toValue = document.getElementById("adminTrackingToDateTime").value;
 			if (fromValue.length == 0 || toValue.length == 0) {
+				$("#adminTrackingSelectionErrorDIV").html(getTrackErrorMessage("Invalid date!"));
 				return;
-				// error?!
 			}
+			var devicesSelect = document.getElementById("adminTrackingDevicesSelect");
+			if(devicesSelect.length == 0) {
+				$("#adminTrackingSelectionErrorDIV").html(getTrackErrorMessage("Select a device!"));
+				return;
+			}
+			var selectedDeviceId = devicesSelect.value;
+			var selected
 			var dateFrom = new Date(fromValue);
 			var dateTo = new Date(toValue);
 			var token = $("meta[name='_csrf']").attr("content");
@@ -447,13 +504,16 @@
 					xhr.setRequestHeader(header, token);
 				},
 				data : {
+					ownerid : $("#adminTrackingDeviceOwnerIdHIDDEN").val(),
+					deviceid : selectedDeviceId,
 					from : dateFrom.getTime(),
 					to : dateTo.getTime()
 				},
 				success : function(result, status, xhr) {
 					try {
+						adminTrackingSelectDeviceLock = true;
 						if(result.length == 0) {
-							document.getElementById("adminTrackingSelectDeviceBTN").disabled = true;
+							//document.getElementById("adminTrackingSelectDeviceBTN").disabled = true;
 							return;
 						}
 						positions = result;
@@ -487,6 +547,7 @@
 									}
 								}
 							} catch(error) {
+								$("#adminTrackingSelectionErrorDIV").html("Service error!");
 								console.log(error);
 							}
 							
@@ -499,14 +560,19 @@
 						//drawArea(firstFloorMap, ZonesFirstFloor);
 						//drawArea(secondFloorMap, ZonesSecondFloor);					
 					} catch(error) {
+						adminTrackingSelectDeviceLock = true;
+						$("#adminTrackingSelectionErrorDIV").html("Service error!");
 						console.log(error);
 					}
 				},
 				error : function(xhr, status, error) {
-					alert("ERROR!");
+					adminTrackingSelectDeviceLock = true;
+					$("#adminTrackingSelectionErrorDIV").html("Service error!");
+					console.log(error)
 				}
 			});
 		} catch(error) {
+			adminTrackingSelectDeviceLock = true;
 			console.log(error);
 		}
 	});
@@ -517,7 +583,7 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-lg-12">
-		
+			<div id="adminTrackingSelectionErrorDIV"></div>
 			<div class="panel-group">
 			  <div class="panel panel-default">
 			    <div class="panel-heading" id="adminTrackingUserAndDeviceChooserHeader">
@@ -534,6 +600,7 @@
 								Users:
 							</div>
 							<div class="panel-body">
+								
 								<select  class="form-control" id="adminTrackingUsersSelect">
 				       				<c:forEach items="${userids}" var="userid">
 				       					<option>${userid}</option>
@@ -560,7 +627,8 @@
 				      			<label for="adminTrackingToDateTime">To</label>
 				      			<input type="datetime-local" id="adminTrackingToDateTime">  
 				      			<br />
-				      			<input type="button" value="Select device!" id="adminTrackingSelectDeviceBTN">   			
+				      			<input type="button" value="Select device!" id="adminTrackingSelectDeviceBTN">
+				      			<input type="hidden" id="adminTrackingDeviceOwnerIdHIDDEN">   			
 							</div>
 						</div>
 			      </div>

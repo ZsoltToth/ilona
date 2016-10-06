@@ -25,7 +25,7 @@ public interface DeviceManagementDAO {
 	void storeDevice(DeviceData device, UserData user)
 			throws DeviceAlreadyExistsException, OperationExecutionErrorException;
 
-	DeviceData readDevice(String deviceid)
+	DeviceData readDevice(String deviceid, UserData user)
 			throws DeviceNotFoundException, OperationExecutionErrorException;
 
 	/**

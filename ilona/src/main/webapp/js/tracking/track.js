@@ -9,7 +9,7 @@ function trackCalculateY(posY) {
 function clearSelectElement(id) {
 	try {
 		var select = document.getElementById(id);
-		while (select.size != 0) {
+		while (select.length != 0 || select.size != 0) {		
 			select.remove(0);
 		}
 	} catch (error) {
@@ -431,5 +431,13 @@ function generateDateTimePickerValue() {
 				+ minutes;
 	} catch (error) {
 		throw "Function :: generateDateTimePickerValue Error: " + error;
+	}
+}
+
+function getTrackErrorMessage(message) {
+	try {
+		return "<p class='bg-primary'>" + message + "</p>";
+	} catch(error) {
+		throw "Function :: getTrackErrorMessage Error: " + error;
 	}
 }

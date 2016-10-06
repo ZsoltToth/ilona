@@ -6,6 +6,7 @@ import java.util.Date;
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
 import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
+import uni.miskolc.ips.ilona.tracking.model.UserData;
 import uni.miskolc.ips.ilona.tracking.persist.exception.OperationExecutionErrorException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.PositionAlreadyExistsException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.PositionNotFoundException;
