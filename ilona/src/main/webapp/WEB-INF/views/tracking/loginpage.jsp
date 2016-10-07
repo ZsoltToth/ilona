@@ -54,10 +54,36 @@
 				url : "<c:url value='/tracking/processlogin'></c:url>",
 				timeout : 10000,
 				error : function(xhr, status, error) {
-					$("#mainpageLoginUseridTXT").val("");
-					$("#mainpageLoginPasswordTXT").val("");
-					$("#mainpageLoginErrorContent").html("Service error!");
-					console.log(xhr.responseText);
+					//$("#mainpageLoginUseridTXT").val("");
+					//$("#mainpageLoginPasswordTXT").val("");
+					try {
+						var response = JSON.parse(xhr.responseText);
+						switch (response.responseState) {
+						case 100:
+							$("#mainpageLoginErrorContent").html("Invalid username or password!");
+							break;
+						case 200:
+							$("#mainpageLoginErrorContent").html("The current account is not enabled!");
+							break;
+						case 300:
+							$("#mainpageLoginErrorContent").html("The current account is expired!");
+							break;
+						case 400:
+							$("#mainpageLoginErrorContent").html("The current account is locked until: "
+									+ new Date(response.timestamp));
+							break;
+						case 500:
+							$("#mainpageLoginErrorContent").html("The password is expired!" + 
+									"The new password is sended to the email address!");
+							break;
+						default:
+							$("#mainpageLoginErrorContent").html("Service error!");
+							break;
+						}
+						
+					} catch(error) {
+						console.log(error);
+					}
 				},
 				success : function(result, status, xhr) {
 					$("#page-wrapper").html(result);

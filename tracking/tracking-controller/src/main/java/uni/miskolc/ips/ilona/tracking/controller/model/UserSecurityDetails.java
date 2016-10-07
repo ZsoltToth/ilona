@@ -3,11 +3,18 @@ package uni.miskolc.ips.ilona.tracking.controller.model;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.annotation.Resource;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import uni.miskolc.ips.ilona.tracking.util.TrackingModuleCentralManager;
+
 public class UserSecurityDetails implements UserDetails {
 
+	@Resource(name = "trackingCentralManager")
+	private static TrackingModuleCentralManager centManager;
+	
 	/**
 	 * 
 	 */
@@ -55,10 +62,7 @@ public class UserSecurityDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// one year: 31536000000
-		if ((new Date().getTime() - lastLoginDate.getTime()) > 31536000000L) {
-			return false;
-		}
+		// ?
 		return true;
 	}
 
@@ -70,10 +74,7 @@ public class UserSecurityDetails implements UserDetails {
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-
-		if (new Date().getTime() > this.credentialNonExpiredUntil.getTime()) {
-			return false;
-		}
+		// ?
 		return true;
 	}
 

@@ -26,7 +26,7 @@
 		;
 	</insert>
 
-	<insert id="updateBadLogins">
+	<insert id="insertBadLogins">
 		insert into TrackingLoginAttempts(userid, attempt) values
 		<foreach collection="badLogins" item="badlogin" separator=",">
 			(#{userid}, from_unixtime(#{badlogin}))
@@ -57,7 +57,7 @@
 	<update id="updateLockedAndUntilLocked">
 		update TrackingUsers set nonlocked = #{nonLocked,
 		typeHandler=BooleanToIntHander}, lockeduntil =
-		from_unixtime(#{lockedUntil});
+		from_unixtime(#{lockedUntil}) where userid = #{userid};
 	</update>
 
 	<delete id="eraseRoles">

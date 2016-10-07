@@ -26,7 +26,7 @@ public interface SecurityFunctionsUserMapper {
 			@Param(value = "badLogins") Collection<Double> badLogins);
 
 	int updateLockedAndUntilLocked(@Param(value = "userid") String userid,
-			@Param(value = "nonlocked") boolean nonlocked, @Param(value = "lockedUntil") Double lockedUntil);
+			@Param(value = "nonLocked") boolean nonlocked, @Param(value = "lockedUntil") Double lockedUntil);
 
 	int erasePasswordToken(@Param(value = "userid") String userid);
 

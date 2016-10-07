@@ -26,6 +26,10 @@
 		class="uni.miskolc.ips.ilona.tracking.controller.security.CustomAuthenticationProvider">
 		<constructor-arg ref="CustomUserSecurityService"></constructor-arg>
 		<constructor-arg ref="trackingPasswordEncoder"></constructor-arg>
+		<constructor-arg ref="trackingCentralManager"></constructor-arg>
+		<constructor-arg ref="trackingSecurityFunctions"></constructor-arg>
+		<constructor-arg ref="passwordGenerator"></constructor-arg>
+		<constructor-arg ref="passwordTokenSender"></constructor-arg>
 	</bean>
 
 	<bean id="jsonConverter"

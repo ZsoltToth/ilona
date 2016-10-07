@@ -312,10 +312,12 @@ $(".centManUpdateLongValue").click(function(event){
 					if (result.responseState == 100) {
 						$("#" + resultDiv).html(
 								"<p class='bg-primary'>Update success!</p>");
+						return;
 					} 				
 					if(result.responseState == 300) {
 						$("#" + resultDiv).html(
 							"<p class='bg-primary'>Invalid parameter!</p>");
+						return;
 					} else {
 						$("#" + resultDiv).html(
 								"<p class='bg-primary'>Update failed!!</p>");

@@ -3,6 +3,8 @@ package uni.miskolc.ips.ilona.tracking.controller.security;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +20,8 @@ import uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException;
 
 public class CustomUserDetailsService implements UserDetailsService {
 
+	private static Logger logger = LogManager.getLogger(CustomUserDetailsService.class);
+	
 	@Autowired
 	private UserAndDeviceDAO userDeviceDAO;
 
@@ -35,7 +39,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		try {
 			userDB = userDeviceDAO.getUser(userid);
-			return this.createUserDetails(userDB);
+			UserDetails user =  this.createUserDetails(userDB);
+			if(user == null) {
+				throw new OperationExecutionErrorException();
+			}
+			return user;
 
 		} catch (UserNotFoundException e) {
 
@@ -72,7 +80,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 			userDetails.setBadLogins(userdata.getBadLogins());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error: " + e.getMessage());
 			return null;
 		}
 		return userDetails;
