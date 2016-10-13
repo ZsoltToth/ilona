@@ -1,6 +1,6 @@
 package uni.miskolc.ips.ilona.tracking.controller.exception;
 
-import uni.miskolc.ips.ilona.tracking.util.validate.ValidityStatusHolder;
+import uni.miskolc.ips.ilona.tracking.controller.util.ValidityStatusHolder;
 
 public class UserChangeDetailsExecutionException extends Exception {
 

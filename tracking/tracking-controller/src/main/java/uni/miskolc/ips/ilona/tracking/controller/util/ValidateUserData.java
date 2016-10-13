@@ -2,13 +2,22 @@ package uni.miskolc.ips.ilona.tracking.controller.util;
 
 import java.util.regex.Pattern;
 
-import uni.miskolc.ips.ilona.tracking.util.validate.ValidityStatusHolder;
-
 public class ValidateUserData {
 
-	private static String useridPattern = "^[a-zA-Z]{1}[a-zA-Z0-9]{4,19}$";
-	private static String userNamePattern = "^[a-zA-ZöüóőúéáűÖÜÓŐÚŰÁÉ][a-zA-ZöüóőúéáűÖÜÓŐÚŰÁÉ0-9]{4,30}$";
-	private static String emailPattern = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+	/**
+	 * The userid pattern.
+	 */
+	public final static String useridPattern = "^[a-zA-Z]{1}[a-zA-Z0-9]{4,19}$";
+
+	/**
+	 * The username pattern.
+	 */
+	public final static String userNamePattern = "^[a-zA-ZöüóőúéáűÖÜÓŐÚŰÁÉ][a-zA-ZöüóőúéáűÖÜÓŐÚŰÁÉ0-9]{4,30}$";
+
+	/**
+	 * The email pattern.
+	 */
+	public final static String emailPattern = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 
 	public static ValidityStatusHolder validateUserid(String userid) {
 		ValidityStatusHolder errors = new ValidityStatusHolder();
@@ -67,11 +76,11 @@ public class ValidateUserData {
 
 	public static ValidityStatusHolder validateRawPassword(String password) {
 		ValidityStatusHolder errors = new ValidityStatusHolder();
-		if(password == null) {
+		if (password == null) {
 			errors.addValidityError("The password is empty!");
 			return errors;
 		}
-		if(!Pattern.matches(WebpageInformationProvider.getPasswordpattern(), password)) {
+		if (!Pattern.matches(WebpageInformationProvider.getPasswordpattern(), password)) {
 			errors.addValidityError("Invalid password!");
 		}
 		return errors;

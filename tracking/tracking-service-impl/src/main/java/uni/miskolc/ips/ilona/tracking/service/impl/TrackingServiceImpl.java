@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
+import uni.miskolc.ips.ilona.measurement.service.PositionService;
 import uni.miskolc.ips.ilona.positioning.service.PositioningService;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
 import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
@@ -21,15 +22,48 @@ import uni.miskolc.ips.ilona.tracking.service.exceptions.DuplicatedPositionExcep
 import uni.miskolc.ips.ilona.tracking.service.exceptions.InvalidMeasurementException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.ServiceGeneralErrorException;
 
+/**
+ * This class is an implementation of the interface {@link TrackingService}
+ * 
+ * @author Patrik / A5USL0
+ *
+ */
 public class TrackingServiceImpl implements TrackingService {
 
 	private static Logger logger = LogManager.getLogger(TrackingServiceImpl.class);
 
+	/**
+	 * Position service injected by the IOC.
+	 */
 	@Resource(name = "positioningService")
 	private PositioningService positionService;
 
+	/**
+	 * TrackingDAO injected by the IOC.
+	 */
 	@Resource(name = "trackingDAO")
 	private TrackingDAO trackingDAO;
+
+	/**
+	 * 
+	 */
+	public TrackingServiceImpl() {
+
+	}
+
+	/**
+	 * Constructor with the two dependencies.
+	 * 
+	 * @param positioningService
+	 *            Class what implemenets the {@link PositioningService}
+	 *            interface.
+	 * @param trackingDAO
+	 *            Class what implements the {@link TrackingDAO} interface.
+	 */
+	public TrackingServiceImpl(PositioningService positioningService, TrackingDAO trackingDAO) {
+		this.positionService = positioningService;
+		this.trackingDAO = trackingDAO;
+	}
 
 	@Override
 	public Position calculatePosition(Measurement measurement)
@@ -70,8 +104,46 @@ public class TrackingServiceImpl implements TrackingService {
 
 	@Override
 	public Map<String, Integer> calculateZoneStatistics() throws ServiceGeneralErrorException {
-		// TODO Auto-generated method stub
+
 		return null;
+	}
+
+	/**
+	 * Returns the inner position service.
+	 * 
+	 * @return Implements {@link PositioningService} interface.
+	 */
+	public PositioningService getPositionService() {
+		return positionService;
+	}
+
+	/**
+	 * Sets the inner position service.
+	 * 
+	 * @param positionService
+	 *            Implements the {@link PositionService} interface.
+	 */
+	public void setPositionService(PositioningService positionService) {
+		this.positionService = positionService;
+	}
+
+	/**
+	 * Return the inner tracking DAO.
+	 * 
+	 * @return Implements {@link TrackingDAO} interface.
+	 */
+	public TrackingDAO getTrackingDAO() {
+		return trackingDAO;
+	}
+
+	/**
+	 * Sets the inner trackingDAO.
+	 * 
+	 * @param trackingDAO
+	 *            Implements the {@link TrackingDAO} interface.
+	 */
+	public void setTrackingDAO(TrackingDAO trackingDAO) {
+		this.trackingDAO = trackingDAO;
 	}
 
 }

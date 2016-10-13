@@ -15,8 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uni.miskolc.ips.ilona.tracking.controller.model.ExecutionResultDTO;
 import uni.miskolc.ips.ilona.tracking.controller.util.ValidateExecutionParameters;
+import uni.miskolc.ips.ilona.tracking.controller.util.ValidityStatusHolder;
 import uni.miskolc.ips.ilona.tracking.util.TrackingModuleCentralManager;
-import uni.miskolc.ips.ilona.tracking.util.validate.ValidityStatusHolder;
 
 @Controller
 @RequestMapping(value = "/tracking/admin")

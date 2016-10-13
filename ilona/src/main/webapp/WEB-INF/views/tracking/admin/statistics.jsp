@@ -16,22 +16,26 @@
 <script type="text/javascript">
 	
 	$("#adminStatisticsUserCountRefreshBTN").click(function(event){
-		event.preventDefault();
-		$("#adminStatisticsUserCountDountGraphDIV").html("");
-		var userData = [
-			{label: "Users", value: 156, color: "#3366CC"},
-			{label: "Admins", value: 23, color: "#FF9900"}
-		];
-		
-		var userDataBase = [
-		    			{label: "Users", value: 0, color: "#3366CC"},
-		    			{label: "Admins", value: 100, color: "#FF9900"}
-		    		];
-		var svg = d3.select("#adminStatisticsUserCountDountGraphDIV").append("svg").attr("width",300).attr("height",250);
-		svg.append("g").attr("id","salesDonut");
-		Donut3D.draw("salesDonut", userDataBase, 150, 100, 130, 100, 30, 0.4);
-		
-		Donut3D.transition("salesDonut", userData , 150, 100, 30, 0.4);
+		try {
+			event.preventDefault();
+			$("#adminStatisticsUserCountDountGraphDIV").html("");
+			var userData = [
+				{label: "Users", value: 156, color: "#3366CC"},
+				{label: "Admins", value: 23, color: "#FF9900"}
+			];
+			
+			var userDataBase = [
+			    			{label: "Users", value: 0, color: "#3366CC"},
+			    			{label: "Admins", value: 100, color: "#FF9900"}
+			    		];
+			var svg = d3.select("#adminStatisticsUserCountDountGraphDIV").append("svg").attr("width",300).attr("height",250);
+			svg.append("g").attr("id","salesDonut");
+			//Donut3D.draw("salesDonut", userDataBase, 150, 100, 130, 100, 30, 0.4);
+			
+			//Donut3D.transition("salesDonut", userData , 150, 100, 30, 0.4);
+		} catch(error) {
+			console.log(error);
+		}
 	});
 	
 </script>
@@ -99,20 +103,15 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 	width = 500 - margin.left - margin.right,
 	height = 300 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal()
-	.rangeRoundBands([0, width/2], .1);
+var x = d3.scaleOrdinal()
+	.domain([0, width/2]);
 
-var y = d3.scale.linear()
+var y = d3.scaleLinear()
 	.range([height, 0]);
 
-var xAxis = d3.svg.axis()
-	.scale(x)
-	.orient("bottom");
+var xAxis = d3.axisBottom(x);
 
-var yAxis = d3.svg.axis()
-	.scale(y)
-	.orient("left")
-	.ticks(10, "");
+var yAxis = d3.axisLeft(y);
 
 var svg = d3.select("#adminStatisticsOnlineUsersDIV").append("svg")
     .attr("width", width + margin.left + margin.right)

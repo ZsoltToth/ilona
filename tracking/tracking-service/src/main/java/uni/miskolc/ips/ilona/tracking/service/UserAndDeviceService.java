@@ -1,9 +1,14 @@
 package uni.miskolc.ips.ilona.tracking.service;
 
-import java.util.Collection;
-
-import uni.miskolc.ips.ilona.tracking.model.UserData;
-
+/**
+ * Interface segregation union interface.<br/>
+ * Implementations: <br/>
+ * {@link UserService} <br/>
+ * {@link DeviceService}
+ * 
+ * @author Patrik
+ *
+ */
 public interface UserAndDeviceService extends UserService, DeviceService {
 
 }

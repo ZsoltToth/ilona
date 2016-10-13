@@ -1,5 +1,10 @@
 package uni.miskolc.ips.ilona.tracking.service.exceptions;
 
+/**
+ * Invalid measurement details, format or properties.
+ * @author Patrik
+ *
+ */
 public class InvalidMeasurementException extends TrackingServiceException {
 
 	/**

@@ -1,5 +1,10 @@
 package uni.miskolc.ips.ilona.tracking.service.exceptions;
 
+/**
+ * Duplicated device.
+ * @author Patrik / A5USL0
+ *
+ */
 public class DuplicatedDeviceException extends DeviceServiceException {
 
 	/**

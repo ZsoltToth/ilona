@@ -7,16 +7,26 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 
 /**
+ * Password validity token model.
  * 
- * @author Patrik
+ * @author Patrik / A5USL0
  *
  */
 public class PasswordRecoveryToken {
 
+	/**
+	 * User's userid.
+	 */
 	private String userid;
 
+	/**
+	 * Token id.
+	 */
 	private String token;
 
+	/**
+	 * This token is valid until this date.
+	 */
 	private Date tokenValidUntil;
 
 	public PasswordRecoveryToken() {
@@ -30,6 +40,10 @@ public class PasswordRecoveryToken {
 		this.tokenValidUntil = tokenValidUntil;
 	}
 
+	/**
+	 * 
+	 * @return the userid of the current 
+	 */
 	public String getUserid() {
 		return userid;
 	}

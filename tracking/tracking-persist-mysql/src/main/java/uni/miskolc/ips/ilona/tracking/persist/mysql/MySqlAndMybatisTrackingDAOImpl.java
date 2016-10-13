@@ -72,7 +72,7 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 					zone.getId().toString(), zone.getName());
 			session.commit();
 		} catch (Exception e) {
-			if (e instanceof MySQLIntegrityConstraintViolationException) {
+			if (e.getCause() instanceof MySQLIntegrityConstraintViolationException) {
 				logger.info("Duplicated device with id: " + position.getUUID().toString());
 				throw new PositionAlreadyExistsException("Duplicated device", e);
 			}

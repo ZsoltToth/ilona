@@ -1,5 +1,10 @@
 package uni.miskolc.ips.ilona.tracking.service.exceptions;
 
+/**
+ * This is the parent class of the device exceptions related to the device management.
+ * @author Patrik / A5USL0
+ *
+ */
 public class DeviceServiceException extends TrackingServiceException {
 
 	/**

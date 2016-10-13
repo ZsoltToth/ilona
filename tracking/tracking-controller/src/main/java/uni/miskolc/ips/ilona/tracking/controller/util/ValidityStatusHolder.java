@@ -1,4 +1,4 @@
-package uni.miskolc.ips.ilona.tracking.util.validate;
+package uni.miskolc.ips.ilona.tracking.controller.util;
 
 import java.util.ArrayList;
 import java.util.Collection;

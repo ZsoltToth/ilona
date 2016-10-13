@@ -2,8 +2,6 @@ package uni.miskolc.ips.ilona.tracking.controller.util;
 
 import java.util.regex.Pattern;
 
-import uni.miskolc.ips.ilona.tracking.util.validate.ValidityStatusHolder;
-
 public class ValidateDeviceData {
 
 	private static String deviceidPattern = "^(?=.{5,50}$)^([a-zA-Z0-9]{1}[_:-]{0,1}){1,49}[a-zA-Z0-9]{1}$";

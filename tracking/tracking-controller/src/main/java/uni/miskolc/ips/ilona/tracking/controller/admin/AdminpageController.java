@@ -20,13 +20,13 @@ import org.springframework.web.servlet.ModelAndView;
 import uni.miskolc.ips.ilona.tracking.controller.model.ExecutionResultDTO;
 import uni.miskolc.ips.ilona.tracking.controller.model.UserBaseDetailsDTO;
 import uni.miskolc.ips.ilona.tracking.controller.util.ValidateUserData;
+import uni.miskolc.ips.ilona.tracking.controller.util.ValidityStatusHolder;
 import uni.miskolc.ips.ilona.tracking.controller.util.WebpageInformationProvider;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
 import uni.miskolc.ips.ilona.tracking.model.UserData;
 import uni.miskolc.ips.ilona.tracking.service.UserAndDeviceService;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.DuplicatedUserException;
 import uni.miskolc.ips.ilona.tracking.util.TrackingModuleCentralManager;
-import uni.miskolc.ips.ilona.tracking.util.validate.ValidityStatusHolder;
 
 /**
  * 

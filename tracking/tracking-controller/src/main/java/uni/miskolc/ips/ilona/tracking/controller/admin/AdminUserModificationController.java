@@ -28,10 +28,11 @@ import uni.miskolc.ips.ilona.tracking.controller.model.UserBaseDetailsDTO;
 import uni.miskolc.ips.ilona.tracking.controller.passwordrecovery.PasswordGenerator;
 import uni.miskolc.ips.ilona.tracking.controller.passwordrecovery.PasswordTokenSender;
 import uni.miskolc.ips.ilona.tracking.controller.util.ValidateUserData;
+import uni.miskolc.ips.ilona.tracking.controller.util.ValidityStatusHolder;
 import uni.miskolc.ips.ilona.tracking.model.UserData;
+import uni.miskolc.ips.ilona.tracking.persist.SecurityFunctionsDAO;
 import uni.miskolc.ips.ilona.tracking.service.UserAndDeviceService;
 import uni.miskolc.ips.ilona.tracking.util.TrackingModuleCentralManager;
-import uni.miskolc.ips.ilona.tracking.util.validate.ValidityStatusHolder;
 
 @Controller
 @RequestMapping(value = "/tracking/admin")
@@ -56,6 +57,9 @@ public class AdminUserModificationController {
 
 	@Resource(name = "passwordGenerator")
 	private PasswordGenerator passwordGenerator;
+	
+	@Resource(name = "trackingSecurityFunctions")
+	private SecurityFunctionsDAO securityDAO;
 
 	@RequestMapping(value = "/usermodresetaccountexpiration", method = { RequestMethod.POST })
 	@ResponseBody
@@ -187,7 +191,8 @@ public class AdminUserModificationController {
 	@RequestMapping(value = "/usermodupdateloginattempts", method = { RequestMethod.POST })
 	@ResponseBody
 	public String accountManagementUpdateLoginAttemptsHandler(@RequestParam("userid") String userid,
-			@RequestParam(value = "attempts[]", required = false) String[] loginAttempts) throws AccessDeniedException {
+			@RequestParam(value = "attempts[]", required = false) String[] loginAttempts)
+			throws TrackingServiceErrorException {
 		// integrity check!
 		// validation!
 		Collection<Date> logins = new ArrayList<>();
@@ -195,16 +200,13 @@ public class AdminUserModificationController {
 			logins.add(new Date(Long.valueOf(loginAttempts[i])));
 		}
 
-		for (Date d : logins) {
-			System.out.println(d.toString());
-		}
 		try {
-			UserData updatedUser = userAndDeviceService.getUser(userid);
-
-			return "";
+			securityDAO.updateBadLogins(userid, logins);
+			return "Updated!";
 
 		} catch (Exception e) {
-			throw new AccessDeniedException("");
+			logger.error("Error: " + e.getMessage());
+			throw new TrackingServiceErrorException("");
 		}
 
 	}

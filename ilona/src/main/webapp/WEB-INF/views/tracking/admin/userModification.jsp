@@ -429,8 +429,14 @@
 	$("#adminUserManLoginAttemptsClearBTN").click(function(event){
 		event.preventDefault();
 		var attempts = document.getElementById("adminUserManLoginAttemptsSelect");
+		var i = 0;
+		var length = attempts.length;
+		for(i; i < length; i++) {
+			adminAccountModDeletedAttempts.push(attempts[i].value);
+		}
 		while(attempts.length != 0) {
 			attempts.remove(0);
+			
 		}
 	});
 	
@@ -443,6 +449,8 @@
 			selected = 0;
 			for(var i = 0; i < attempts.length; i++) {
 				if(attempts[i].selected) {
+					adminAccountModDeletedAttempts.push(attempts[i].value);
+					console.log("value: " + attempts[i].value);
 					attempts.remove(i);
 					selected++;
 				}
@@ -451,35 +459,70 @@
 		}
 	});
 	
+	$("#adminUserManLoginAttemptsResetClearBTN").click(function(event){
+		try {
+			var attempts = document.getElementById("adminUserManLoginAttemptsSelect");
+			
+			var i = 0;
+			var length = adminAccountModDeletedAttempts.length;
+			for (i; i < length; i++) {
+				var optionElement = document.createElement("option");
+				optionElement.text = new Date(adminAccountModDeletedAttempts[i]);
+				optionElement.value = adminAccountModDeletedAttempts[i];
+				console.log(new Date(adminAccountModDeletedAttempts[i]));
+				optionElement.label =  (new Date(adminAccountModDeletedAttempts[i]*0.001)).toString();
+				attempts.add(optionElement);
+			}
+			adminAccountModDeletedAttempts = [];
+		} catch(error) {
+			console.log(error);
+		}
+	});
+	
 	$("#adminUserManLoginAttemptsConfirmChangesBTN").click(function(event){
-		event.preventDefault();
-		var token = $("meta[name='_csrf']").attr("content");
-		var header = $("meta[name='_csrf_header']").attr("content");
-		var attempts = document.getElementById("adminUserManLoginAttemptsSelect");
-		var attemptArray = [];
-		for (var i = 0; i < attempts.length; i++) {
-			attemptArray[i] = attempts[i].value;
-		}	
-
-		$.ajax({
-			type : "POST",
-			async : true,
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader(header, token);
-			},
-			data : {
-				userid : $("#adminUserModUseridHidden").val(),
-				attempts : attemptArray
-			},
-			url : "<c:url value='/tracking/admin/usermodupdateloginattempts'></c:url>",
-			success : function(result, status, xhr) {
-				alert("success!");
-				
-			},
-			error : function(xhr, status, error) {
-				alert("error!"+status+error);
-			}		 
-		});
+		try {
+			event.preventDefault();
+			var token = $("meta[name='_csrf']").attr("content");
+			var header = $("meta[name='_csrf_header']").attr("content");
+			var attempts = document.getElementById("adminUserManLoginAttemptsSelect");
+			var attemptArray = [];
+			for (var i = 0; i < attempts.length; i++) {
+				attemptArray[i] = attempts[i].value;
+			}	
+			
+			$.ajax({
+				type : "POST",
+				async : true,
+				beforeSend : function(xhr) {
+					xhr.setRequestHeader(header, token);
+				},
+				data : {
+					userid : $("#adminUserModUseridHidden").val(),
+					attempts : attemptArray
+				},
+				url : "<c:url value='/tracking/admin/usermodupdateloginattempts'></c:url>",
+				success : function(result, status, xhr) {
+					try {
+						adminAccountModDeletedAttempts = [];
+						$("#adminUserManLoginAttemptsResultDIV")
+							.html("<p class='bg-primary'>Attempts updated!</p>");
+					} catch(error) {
+						console.log(error);
+					}
+					
+				},
+				error : function(xhr, status, error) {
+					try {
+						$("#adminUserManLoginAttemptsResultDIV")
+							.html("<p class='bg-primary'>Attempts updated!</p>");
+					} catch(error) {
+						console.log(error);
+					}
+				}		 
+			});
+		} catch(error) {
+			console.log(error);
+		}
 	});
 	
 </script>
@@ -673,6 +716,7 @@
 				Account locked details:
 			</div>
 			<div class="panel-body">
+				<div id="adminUserManLoginAttemptsResultDIV"></div>
 				<p>Bad login attempts: (Hold ctrl to select more!)</p>
 				<select multiple class="form-control" id="adminUserManLoginAttemptsSelect" size="15">
        				<c:forEach items="${loginAttempts}" var="attempt">
@@ -681,7 +725,8 @@
       			</select> <br />		
       			<input type="button" value="Clear all!" id="adminUserManLoginAttemptsClearBTN"> 
       			<input type="button" value="Clear selected!" id="adminUserManLoginAttemptsDeleteSelectedBTN"> 
-      			<input type="button" value="Confirm changes!" id="adminUserManLoginAttemptsConfirmChangesBTN">		
+      			<input type="button" value="Confirm changes!" id="adminUserManLoginAttemptsConfirmChangesBTN">
+      			<input type="button" value="Reset clears!" id="adminUserManLoginAttemptsResetClearBTN">		
 			</div>
 		</div>
 	</div>

@@ -1,5 +1,10 @@
 package uni.miskolc.ips.ilona.tracking.service.exceptions;
 
+/**
+ * The current user is already exists.
+ * @author Patrik
+ *
+ */
 public class DuplicatedUserException extends UserServiceException {
 
 	/**

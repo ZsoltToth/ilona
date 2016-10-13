@@ -25,6 +25,7 @@ import uni.miskolc.ips.ilona.tracking.controller.model.UserSecurityDetails;
 import uni.miskolc.ips.ilona.tracking.controller.util.WebpageInformationProvider;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
 import uni.miskolc.ips.ilona.tracking.model.UserData;
+import uni.miskolc.ips.ilona.tracking.persist.SecurityFunctionsDAO;
 import uni.miskolc.ips.ilona.tracking.service.UserAndDeviceService;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.UserNotFoundException;
 import uni.miskolc.ips.ilona.tracking.util.TrackingModuleCentralManager;
@@ -40,7 +41,10 @@ public class AdminListAllUsersController {
 
 	@Resource(name = "trackingCentralManager")
 	private TrackingModuleCentralManager centralManager;
-	
+
+	@Resource(name = "trackingSecurityFunctions")
+	private SecurityFunctionsDAO securityDAO;
+
 	@RequestMapping(value = "/listallusers")
 	public ModelAndView createAdminpageListAlluserspage() {
 		ModelAndView userlistPage = new ModelAndView("tracking/admin/listAllUsers");
@@ -185,8 +189,9 @@ public class AdminListAllUsersController {
 			}
 			mav.addObject("passwordValidUntil", user.getCredentialNonExpiredUntil().getTime());
 
-			Collection<LoginAttemptFormStorage> attempts = new ArrayList<>();
-			Collection<Date> loginAttempts = user.getBadLogins();
+			Collection<LoginAttemptFormStorage> attempts = new ArrayList<>();			
+			Collection<Date> loginAttempts = securityDAO.loadBadLogins(userid);
+			System.out.println(loginAttempts);
 			for (Date date : loginAttempts) {
 				LoginAttemptFormStorage storage = new LoginAttemptFormStorage();
 				storage.setFormatDate(date.toString());

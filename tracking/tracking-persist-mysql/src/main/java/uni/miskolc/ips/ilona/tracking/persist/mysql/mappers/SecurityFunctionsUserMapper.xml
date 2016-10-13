@@ -7,14 +7,22 @@
 	namespace="uni.miskolc.ips.ilona.tracking.persist.mysql.mappers.SecurityFunctionsUserMapper">
 
 	<resultMap type="passwordTokenMapper" id="passwordTokenResultMapper">
-		<id column="userid" property="userid"/>
-		<result column="recoverytoken" property="token"/>
-		<result column="validuntil" property="validUntil"/>
+		<id column="userid" property="userid" />
+		<result column="recoverytoken" property="token" />
+		<result column="validuntil" property="validUntil" />
 	</resultMap>
 
 	<select id="readPasswordToken" resultMap="passwordTokenResultMapper">
-		select userid, recoverytoken, round(unix_timestamp(validuntil)*1000) as validuntil from PasswordRecoveryTokens
-		 where userid = #{userid}; 
+		select userid,
+		recoverytoken, round(unix_timestamp(validuntil)*1000) as validuntil
+		from PasswordRecoveryTokens
+		where userid = #{userid};
+	</select>
+
+	<select id="getBadLogins" resultType="Long">
+		select
+		round(unix_timestamp(attempt) * 1000) as attempt from
+		trackingloginattempts where userid = #{userid};
 	</select>
 
 	<insert id="insertRoles">
@@ -33,14 +41,16 @@
 		</foreach>
 		;
 	</insert>
-	
+
 	<insert id="storePasswordToken">
-		insert into PasswordRecoveryTokens(userid, recoverytoken, validuntil) values(
-		#{userid}, #{token}, from_unixtime(#{validuntil}));
+		insert into PasswordRecoveryTokens(userid,
+		recoverytoken, validuntil) values(
+		#{userid}, #{token},
+		from_unixtime(#{validuntil}));
 	</insert>
 
 	<update id="updatePassword">
-		update TrackingUsers set password = #{password} where
+		update TrackingUsers set password = #{password}, credentialsvaliduntil = #{valid} where
 		userid = #{userid};
 	</update>
 
@@ -70,12 +80,13 @@
 		delete from TrackingLoginAttempts where userid =
 		#{userid};
 	</delete>
-	
+
 	<delete id="erasePasswordToken">
-		delete from PasswordRecoveryTokens where userid = #{userid};
+		delete from PasswordRecoveryTokens where userid =
+		#{userid};
 	</delete>
-	
-	
+
+
 
 
 </mapper>

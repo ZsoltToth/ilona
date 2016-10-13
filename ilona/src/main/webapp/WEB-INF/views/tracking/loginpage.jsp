@@ -74,7 +74,7 @@
 							break;
 						case 500:
 							$("#mainpageLoginErrorContent").html("The password is expired!" + 
-									"The new password is sended to the email address!");
+									"The new password has been sended to the email address!");
 							break;
 						default:
 							$("#mainpageLoginErrorContent").html("Service error!");

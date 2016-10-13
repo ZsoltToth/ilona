@@ -364,7 +364,7 @@
 			<div class="panel-body">			
 				<div id="adminUserDevModifyDeviceCollapseDIV" class="collapse">
 					<div id="adminUserDevModifyDeviceDataDIV" class="table-responsive" >
-						<table class="table">
+						<table class="display">
 							<thead>
 								<tr>
 									<th>Deviceid</th>

@@ -17,16 +17,35 @@ import uni.miskolc.ips.ilona.tracking.service.exceptions.DuplicatedUserException
 import uni.miskolc.ips.ilona.tracking.service.exceptions.ServiceGeneralErrorException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.UserNotFoundException;
 
+/**
+ * {@link UserAndDeviceService} implemenetation.
+ * 
+ * @author Patrik
+ *
+ */
 public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 
 	private static Logger logger = LogManager.getLogger(UserAndDeviceServiceImpl.class);
 
+	/**
+	 * User database connection provider.
+	 */
 	private UserAndDeviceDAO userDeviceDAO;
 
+	/**
+	 * Parameterless constructor if needed.
+	 */
 	public UserAndDeviceServiceImpl() {
 		this.userDeviceDAO = null;
 	}
 
+	/**
+	 * Constructor with one DAO parameter.<br/>
+	 * 
+	 * @param dao
+	 *            This parameter must implement the {@link UserAndDeviceDAO}
+	 *            interface.
+	 */
 	public UserAndDeviceServiceImpl(UserAndDeviceDAO dao) {
 		this.userDeviceDAO = dao;
 	}
@@ -160,7 +179,8 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 	}
 
 	@Override
-	public DeviceData readDevice(String deviceid, UserData user) throws DeviceNotFoundException, ServiceGeneralErrorException {
+	public DeviceData readDevice(String deviceid, UserData user)
+			throws DeviceNotFoundException, ServiceGeneralErrorException {
 		try {
 			return userDeviceDAO.readDevice(deviceid, user);
 		} catch (Exception e) {
@@ -249,4 +269,24 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 			throw new ServiceGeneralErrorException("Device has not found id: " + deviceid + " ownerid: " + userid, e);
 		}
 	}
+
+	/**
+	 * Returns the current inner DAO.
+	 * 
+	 * @return The current inner DAO, interface: {@link UserAndDeviceDAO}
+	 */
+	public UserAndDeviceDAO getUserDeviceDAO() {
+		return userDeviceDAO;
+	}
+
+	/**
+	 * Set the userDAO.
+	 * 
+	 * @param userDeviceDAO
+	 *            interface: {@link UserAndDeviceDAO}
+	 */
+	public void setUserDeviceDAO(UserAndDeviceDAO userDeviceDAO) {
+		this.userDeviceDAO = userDeviceDAO;
+	}
+
 }

@@ -1,8 +1,11 @@
 package uni.miskolc.ips.ilona.tracking.service.exceptions;
 
+/**
+ * Device not found exception in the tracking service module.
+ * @author Patrik / A5USL0
+ */
 public class DeviceNotFoundException extends DeviceServiceException {
 
-	
 	/**
 	 * 
 	 */

@@ -1,7 +1,5 @@
 package uni.miskolc.ips.ilona.tracking.controller.util;
 
-import uni.miskolc.ips.ilona.tracking.util.validate.ValidityStatusHolder;
-
 public class ValidateExecutionParameters {
 
 	private static long accountExpirationTimeMin = 2678400000L; // one month

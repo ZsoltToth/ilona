@@ -50,12 +50,12 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 	}
 
 	@Override
-	public void updatePassword(String userid, String hashedPassword)
+	public void updatePassword(String userid, String hashedPassword, Date validUntil)
 			throws UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
 			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
-			int updated = mapper.updatePassword(userid, hashedPassword);
+			int updated = mapper.updatePassword(userid, hashedPassword, validUntil);
 			if (updated == 0) {
 				throw new UserNotFoundException("User not found!");
 			}
@@ -163,6 +163,29 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 			session.close();
 		}
 		return affectedRows;
+	}
+
+	@Override
+	public Collection<Date> loadBadLogins(String userid)
+			throws OperationExecutionErrorException {
+		SqlSession session = sessionFactory.openSession();
+		try {
+			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
+			Collection<Long> dateMapper = mapper.getBadLogins(userid);
+			if (dateMapper == null) {
+				return new ArrayList<Date>();
+			}
+			Collection<Date> badLogins = new ArrayList<>(dateMapper.size());
+			for (Long i : dateMapper) {
+				badLogins.add(new Date(i));
+			}
+			return badLogins;
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			throw new OperationExecutionErrorException("Service error!", e);
+		} finally {
+			session.close();
+		}
 	}
 
 	@Override

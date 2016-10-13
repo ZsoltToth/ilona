@@ -68,9 +68,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		 */
 
 		// Get the username and password
-		String userid = auth.getPrincipal().toString();
-		String password = auth.getCredentials().toString();
+		String userid = null;
+		String password = null;
+		try {
+			userid = auth.getPrincipal().toString();
+			password = auth.getCredentials().toString();
+		} catch (Exception e) {
 
+		}
 		if (userid == null || password == null) {
 			throw new InvalidUsernamePasswordException("Invalid username or password!");
 		}
@@ -105,11 +110,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		if (centralManager.isLockedCheckEnabled()) {
 			if (!user.isNonLocked()) {
 
-				// the account is locked but the lock time is expired check and restore
+				// the account is locked but the lock time is expired check and
+				// restore
 				if (System.currentTimeMillis() > user.getLockedUntil().getTime()) {
 					try {
 						securityDAO.updateLockedAndUntilLocked(userid, true, user.getLockedUntil(), false);
-					} catch(Exception e) {
+					} catch (Exception e) {
 						logger.error("Error: " + e.getMessage());
 						throw new ServiceErrorException("Service error!");
 					}
@@ -134,12 +140,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 			}
 		}
 
-		if ((System.currentTimeMillis() - centralManager.getCredentialsValidityPeriod()) > user
-				.getCredentialNonExpiredUntil().getTime()) {
+		if (System.currentTimeMillis()  > user.getCredentialNonExpiredUntil().getTime()) {
 			String newPassword = passwordGenerator.generatePassword(8);
 			String hashedPassword = passwordEncoder.encode(newPassword);
 			try {
-				securityDAO.updatePassword(userid, hashedPassword);
+
+				securityDAO.updatePassword(userid, hashedPassword,
+						new Date(System.currentTimeMillis() + centralManager.getCredentialsValidityPeriod()));
+
 				passwordSender.sendNewPassword(userid, newPassword, user.getEmail());
 			} catch (Exception e) {
 				logger.error("Error: " + e.getMessage());

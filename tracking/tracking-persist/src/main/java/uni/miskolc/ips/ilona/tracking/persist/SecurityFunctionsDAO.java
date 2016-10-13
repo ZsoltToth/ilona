@@ -10,7 +10,7 @@ import uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException;
 
 public interface SecurityFunctionsDAO {
 
-	public void updatePassword(String userid, String hashedPassword)
+	public void updatePassword(String userid, String hashedPassword, Date validUntil)
 			throws UserNotFoundException, OperationExecutionErrorException;
 
 	public void updateEnabled(String userid, boolean enabled)
@@ -23,6 +23,8 @@ public interface SecurityFunctionsDAO {
 			throws UserNotFoundException, OperationExecutionErrorException;
 
 	public int eraseBadLogins(String userid) throws UserNotFoundException, OperationExecutionErrorException;
+
+	public Collection<Date> loadBadLogins(String userid) throws OperationExecutionErrorException;
 
 	public void updateBadLogins(String userid, Collection<Date> badLogins)
 			throws UserNotFoundException, OperationExecutionErrorException;

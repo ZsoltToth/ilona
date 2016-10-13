@@ -1,5 +1,10 @@
 package uni.miskolc.ips.ilona.tracking.service.exceptions;
 
+/**
+ * The current position is already exists.
+ * @author Patrik
+ *
+ */
 public class DuplicatedPositionException extends TrackingServiceException {
 
 	/**

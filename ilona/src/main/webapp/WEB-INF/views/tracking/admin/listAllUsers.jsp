@@ -281,7 +281,6 @@
 				<div class="panel-heading">
 				<input type="checkbox" checked="checked" id="adminListUsersShowAdminsCHB"> Show Admins
 				<input type="checkbox" checked="checked" id="adminListUsersShowUsersCHB"> Show Users
-				<input type="button" class="proba111" value="CLICK!">
 				</div>
 				<div class="panel-body">
 					<div id="adminListUsersResultAndErrorDIV"><p class="bg-primary">${serviceError}</p></div>

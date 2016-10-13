@@ -7,6 +7,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
+ * This class represent the device details in the tracking module. <br />
+ * 
+ * Contains every details(except the ownerid) what is needed to manage the
+ * current device.
  * 
  * @author Patrik / A5USL0
  *
@@ -19,29 +23,48 @@ public class DeviceData implements Serializable, Comparable<DeviceData>, Cloneab
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 
+	 * This id is unique amongst the devices.
 	 */
 	private String deviceid;
 
 	/**
-	 * 
+	 * An arbitrary device name,, given by the user.
 	 */
 	private String deviceName;
 
 	/**
-	 * 
+	 * An arbitrary devicetype, given by the user. <br />
+	 * Example: mobile, tablet, etc.
 	 */
 	private String deviceType;
 
 	/**
-	 * 
+	 * An arbitrary device type name. <br/>
+	 * Example: Manufacturer-type-series. Brand-Serices HD555
 	 */
 	private String deviceTypeName;
 
+	/**
+	 * Parameterless constructor for serialization, cloning and others.
+	 */
 	public DeviceData() {
 
 	}
 
+	/**
+	 * Parameter with the details.
+	 * 
+	 * @param deviceid
+	 *            A unique id. This id is unique amongst the devices.
+	 * @param deviceName
+	 *            An arbitrary device name.
+	 * @param deviceType
+	 *            An arbitrary devicetype, given by the user. <br />
+	 *            Example: mobile, tablet, etc.
+	 * @param deviceTypeName
+	 *            An arbitrary device type name. <br/>
+	 *            Example: Manufacturer-type-series. Brand-Services HD555
+	 */
 	public DeviceData(String deviceid, String deviceName, String deviceType, String deviceTypeName) {
 		super();
 		this.deviceid = deviceid;
@@ -50,34 +73,82 @@ public class DeviceData implements Serializable, Comparable<DeviceData>, Cloneab
 		this.deviceTypeName = deviceTypeName;
 	}
 
+	/**
+	 * This id is unique amongst the devices.
+	 * 
+	 * @return The current deviceid.
+	 */
 	public String getDeviceid() {
 		return deviceid;
 	}
 
+	/**
+	 * This id is unique amongst the devices.
+	 * 
+	 * @param deviceid
+	 *            The new device id.
+	 */
 	public void setDeviceid(String deviceid) {
 		this.deviceid = deviceid;
 	}
 
+	/**
+	 * An arbitrary device name, given by the user.
+	 * 
+	 * @return The current device name value.
+	 */
 	public String getDeviceName() {
 		return deviceName;
 	}
 
+	/**
+	 * An arbitrary device name, given by the user.
+	 * 
+	 * @param deviceName
+	 *            The new device name value.
+	 */
 	public void setDeviceName(String deviceName) {
 		this.deviceName = deviceName;
 	}
 
+	/**
+	 * An arbitrary devicetype, given by the user. <br />
+	 * Example: mobile, tablet, etc.
+	 * 
+	 * @return The current device type value.
+	 */
 	public String getDeviceType() {
 		return deviceType;
 	}
 
+	/**
+	 * An arbitrary devicetype, given by the user. <br />
+	 * Example: mobile, tablet, etc.
+	 * 
+	 * @param deviceType
+	 *            The new devie type value.
+	 */
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
 
+	/**
+	 * An arbitrary device type name. <br/>
+	 * Example: Manufacturer-type-series. Brand-Services HD555
+	 * 
+	 * @return The current device type name.
+	 */
 	public String getDeviceTypeName() {
 		return deviceTypeName;
 	}
 
+	/**
+	 * An arbitrary device type name. <br/>
+	 * Example: Manufacturer-type-series. Brand-Services HD555
+	 * 
+	 * @param deviceTypeName
+	 *            The new device type name value.
+	 */
 	public void setDeviceTypeName(String deviceTypeName) {
 		this.deviceTypeName = deviceTypeName;
 	}
@@ -99,6 +170,9 @@ public class DeviceData implements Serializable, Comparable<DeviceData>, Cloneab
 		return result;
 	}
 
+	/**
+	 * Two device objects are equal, if the deviceids of the devices are equal!
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -131,6 +205,11 @@ public class DeviceData implements Serializable, Comparable<DeviceData>, Cloneab
 		return true;
 	}
 
+	/**
+	 * Creates a shallow copy.
+	 * 
+	 * @return
+	 */
 	public DeviceData shallowCopy() {
 		try {
 			return (DeviceData) this.clone();
@@ -139,6 +218,11 @@ public class DeviceData implements Serializable, Comparable<DeviceData>, Cloneab
 		}
 	}
 
+	/**
+	 * Creates a deep copy.
+	 * 
+	 * @return
+	 */
 	public DeviceData deepCopy() {
 		ByteArrayOutputStream bos = null;
 		ObjectOutputStream out = null;

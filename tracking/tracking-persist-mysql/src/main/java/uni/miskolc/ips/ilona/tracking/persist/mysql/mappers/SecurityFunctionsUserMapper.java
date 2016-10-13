@@ -9,7 +9,8 @@ import uni.miskolc.ips.ilona.tracking.persist.mysql.model.PasswordRecoveryTokenM
 
 public interface SecurityFunctionsUserMapper {
 
-	int updatePassword(@Param(value = "userid") String userid, @Param(value = "password") String password);
+	int updatePassword(@Param(value = "userid") String userid, @Param(value = "password") String password
+			, @Param("valid") Date date);
 
 	int updateEnabled(@Param(value = "userid") String userid, @Param(value = "enabled") boolean enabled);
 
@@ -21,6 +22,8 @@ public interface SecurityFunctionsUserMapper {
 	int insertRoles(@Param(value = "userid") String userid, @Param(value = "roles") Collection<String> roles);
 
 	int eraseBadLogins(@Param(value = "userid") String userid);
+
+	Collection<Long> getBadLogins(@Param(value = "userid") String userid);
 
 	int insertBadLogins(@Param(value = "userid") String userid,
 			@Param(value = "badLogins") Collection<Double> badLogins);
