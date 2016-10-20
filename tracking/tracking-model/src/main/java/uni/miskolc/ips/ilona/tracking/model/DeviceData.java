@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * This class represent the device details in the tracking module. <br />
+ * This class represent the device in the tracking module. <br />
  * 
  * Contains every details(except the ownerid) what is needed to manage the
  * current device.

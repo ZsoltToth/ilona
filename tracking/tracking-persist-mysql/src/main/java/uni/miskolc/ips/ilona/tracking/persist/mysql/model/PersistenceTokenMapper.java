@@ -1,5 +1,14 @@
 package uni.miskolc.ips.ilona.tracking.persist.mysql.model;
 
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
+
+/**
+ * {@link PersistentRememberMeToken} mapper. <br />
+ * Because the database cant store the date milliseconds part directly.
+ * 
+ * @author Patrik
+ *
+ */
 public class PersistenceTokenMapper {
 
 	private String username;

@@ -4,6 +4,12 @@ import java.util.Date;
 
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
 
+/**
+ * This class holds the position object and when the positions measured.
+ * 
+ * @author Patrik
+ *
+ */
 public class TrackPosition {
 
 	private Position position;

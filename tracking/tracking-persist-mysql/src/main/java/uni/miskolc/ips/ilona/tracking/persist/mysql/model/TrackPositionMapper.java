@@ -1,5 +1,14 @@
 package uni.miskolc.ips.ilona.tracking.persist.mysql.model;
 
+import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
+
+/**
+ * {@link TrackPosition} mapper. <br />
+ * The database cant hold the milliseconds part directly.
+ * 
+ * @author Patrik
+ *
+ */
 public class TrackPositionMapper {
 
 	private String positionid;

@@ -77,6 +77,13 @@ public class AdminListAllUsersController {
 		return userlistPage;
 	}
 
+	/**
+	 * 
+	 * @param userid 
+	 * @return 
+	 * @throws TrackingServiceErrorException
+	 *             The request cannot be executed.
+	 */
 	@RequestMapping(value = "/listusers/getusersdevices", method = { RequestMethod.POST })
 	public ModelAndView createListUserDevicespage(@RequestParam(name = "userid", required = false) String userid)
 			throws TrackingServiceErrorException {
@@ -100,6 +107,18 @@ public class AdminListAllUsersController {
 		return mav;
 	}
 
+	/**
+	 * 
+	 * @param userid
+	 * @return {@link ExecutionResultDTO}<br>
+	 *         <ul>
+	 *         <li>100: OK</li>
+	 *         <li>200: Parameter error</li>
+	 *         <li>400: Service error</li>
+	 *         <li>600: Duplicated user error</li>
+	 *         <li>700: Own account delete request error</li>
+	 *         </ul>
+	 */
 	@RequestMapping(value = "/listusers/deleteuser", method = { RequestMethod.POST })
 	@ResponseBody
 	public ExecutionResultDTO deleteUser(@RequestParam(value = "userid", required = false) String userid) {
@@ -137,6 +156,12 @@ public class AdminListAllUsersController {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param userid
+	 * @return
+	 * @throws TrackingServiceErrorException
+	 */
 	@RequestMapping(value = "/listusers/modifyuser")
 	public ModelAndView createAdminUserModificationpageHandler(
 			@RequestParam(name = "userid", required = false) String userid) throws TrackingServiceErrorException {
@@ -189,7 +214,7 @@ public class AdminListAllUsersController {
 			}
 			mav.addObject("passwordValidUntil", user.getCredentialNonExpiredUntil().getTime());
 
-			Collection<LoginAttemptFormStorage> attempts = new ArrayList<>();			
+			Collection<LoginAttemptFormStorage> attempts = new ArrayList<>();
 			Collection<Date> loginAttempts = securityDAO.loadBadLogins(userid);
 			System.out.println(loginAttempts);
 			for (Date date : loginAttempts) {

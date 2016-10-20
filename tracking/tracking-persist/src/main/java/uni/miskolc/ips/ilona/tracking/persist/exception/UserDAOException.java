@@ -1,5 +1,11 @@
 package uni.miskolc.ips.ilona.tracking.persist.exception;
 
+/**
+ * User operations base class.
+ * 
+ * @author Patrik
+ *
+ */
 public class UserDAOException extends TrackingDAOException {
 
 	/**

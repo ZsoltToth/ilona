@@ -37,6 +37,23 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 
 	}
 
+	/**
+	 * 
+	 * @param configFilePath
+	 *            Mybatis config file path.
+	 * @param host
+	 *            Database host.
+	 * @param port
+	 *            Database port.
+	 * @param database
+	 *            Database name.
+	 * @param user
+	 *            Database username.
+	 * @param password
+	 *            Database password.
+	 * @throws FileNotFoundException
+	 *             The mybatis configuration file is not found.
+	 */
 	public MySqlAndMybatisUserAndDeviceDAOImplementation(final String configFilePath, final String host, final int port,
 			final String database, final String user, final String password) throws FileNotFoundException {
 		File configFile = new File(configFilePath);
@@ -249,7 +266,8 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 	}
 
 	@Override
-	public DeviceData readDevice(String deviceid, UserData user) throws DeviceNotFoundException, OperationExecutionErrorException {
+	public DeviceData readDevice(String deviceid, UserData user)
+			throws DeviceNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 
 		try {
@@ -342,6 +360,17 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 			throw new OperationExecutionErrorException("Error: " + e.getMessage());
 		} finally {
 			session.close();
+		}
+	}
+
+	/**
+	 * 
+	 * @param sessionFactory
+	 *            Pre configured sessionFactory.
+	 */
+	public void setSessionFactory(SqlSessionFactory sessionFactory) {
+		if (sessionFactory != null) {
+			this.sessionFactory = sessionFactory;
 		}
 	}
 

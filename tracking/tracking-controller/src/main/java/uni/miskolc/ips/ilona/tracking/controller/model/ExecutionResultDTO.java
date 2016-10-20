@@ -3,6 +3,18 @@ package uni.miskolc.ips.ilona.tracking.controller.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * 
+ * 100: OK <br>
+ * 200: Parameter error <br>
+ * 300: Validity error <br>
+ * 400: Service error <br>
+ * 500: Server error (Timeout in the ajax)<br>
+ * 600+: Controller defines errors, arbitrary code and meaning
+ * 
+ * @author Patrik
+ *
+ */
 public class ExecutionResultDTO {
 
 	/**
@@ -26,7 +38,6 @@ public class ExecutionResultDTO {
 		this.responseState = responseState;
 		this.messages = messages;
 	}
-
 
 	public void addMessage(String message) {
 		if (message == null) {

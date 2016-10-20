@@ -34,4 +34,9 @@ public class MobileTransferDTO {
 		this.measurement = measurement;
 	}
 
+	@Override
+	public String toString() {
+		return "MobileTransferDTO [deviceid=" + deviceid + ", measurement=" + measurement + "]";
+	}
+
 }

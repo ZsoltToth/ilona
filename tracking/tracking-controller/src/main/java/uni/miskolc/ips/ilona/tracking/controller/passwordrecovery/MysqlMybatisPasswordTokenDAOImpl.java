@@ -45,14 +45,13 @@ public class MysqlMybatisPasswordTokenDAOImpl implements PasswordTokenDAO {
 			throws PasswordRecoveryTokenRestoreErrorException {
 		PasswordRecoveryToken token = null;
 		try {
-			token = tokenRecoveryManager.restorePasswordResetToken(passwordToken);
+			token = tokenRecoveryManager.restorePasswordResetToken(passwordToken.getUserid());
 		} catch (Exception e) {
 			String tokenMessage = "Token is null!";
 			if (passwordToken != null) {
 				tokenMessage = passwordToken.toString();
 			}
-			logger.error(
-					"Recovery token restore failed! Token details:  " + tokenMessage);
+			logger.error("Recovery token restore failed! Token details:  " + tokenMessage);
 			throw new PasswordRecoveryTokenRestoreErrorException(
 					"Recovery token restore failed! Token details:  " + tokenMessage, e);
 		}

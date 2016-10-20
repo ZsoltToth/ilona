@@ -1,5 +1,11 @@
 package uni.miskolc.ips.ilona.tracking.persist.exception;
 
+/**
+ * The device is not found in the system.
+ * 
+ * @author Patrik
+ *
+ */
 public class DeviceNotFoundException extends DeviceDAOException {
 
 	/**

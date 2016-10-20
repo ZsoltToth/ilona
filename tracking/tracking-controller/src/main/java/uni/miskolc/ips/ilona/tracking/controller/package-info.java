@@ -1,5 +1,5 @@
 /**
- * This package contains the shared models of the tracking module.
+ * This package contains the general controllers of the tracking module.
  * 
  * @author Patrik / A5USL0
  * 

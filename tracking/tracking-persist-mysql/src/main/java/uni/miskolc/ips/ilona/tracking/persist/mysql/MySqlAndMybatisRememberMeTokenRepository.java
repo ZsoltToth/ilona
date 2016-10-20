@@ -15,12 +15,42 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import uni.miskolc.ips.ilona.tracking.persist.mysql.mappers.RememberMeTokenMapper;
 import uni.miskolc.ips.ilona.tracking.persist.mysql.model.PersistenceTokenMapper;
 
+/**
+ * Token repository implementation. {@link PersistentTokenRepository} <br />
+ * Custom mysql and mybatis based remember me token repository.
+ * 
+ * @author Patrik
+ *
+ */
 public class MySqlAndMybatisRememberMeTokenRepository implements PersistentTokenRepository {
 
 	private static Logger logger = LogManager.getLogger(MySqlAndMybatisRememberMeTokenRepository.class);
 
+	/**
+	 * Mybatis session factory.
+	 */
 	private SqlSessionFactory sessionFactory;
 
+	/**
+	 * Parameterless constructor if needed.
+	 */
+	public MySqlAndMybatisRememberMeTokenRepository() {
+
+	}
+
+	/**
+	 * 
+	 * @param host
+	 *            The address of the database.
+	 * @param port
+	 *            The database port.
+	 * @param database
+	 *            Database name.
+	 * @param user
+	 *            Database username.
+	 * @param password
+	 *            Database password.
+	 */
 	public MySqlAndMybatisRememberMeTokenRepository(final String host, final int port, final String database,
 			final String user, final String password) {
 		ClassLoader loader = getClass().getClassLoader();
@@ -60,7 +90,8 @@ public class MySqlAndMybatisRememberMeTokenRepository implements PersistentToken
 			PersistenceTokenMapper tokenMapper = mapper.getTokenForSeries(series);
 			System.out.println("TOKEN LONG: " + tokenMapper.getDate());
 			PersistentRememberMeToken restoredToken = new PersistentRememberMeToken(tokenMapper.getUsername(),
-					tokenMapper.getSeries(), tokenMapper.getTokenValue(), new Date((long)tokenMapper.getDate() * 1000L));
+					tokenMapper.getSeries(), tokenMapper.getTokenValue(),
+					new Date((long) tokenMapper.getDate() * 1000L));
 			System.out.println(restoredToken.getDate());
 			return restoredToken;
 		} catch (Exception e) {
@@ -101,6 +132,17 @@ public class MySqlAndMybatisRememberMeTokenRepository implements PersistentToken
 			session.close();
 		}
 
+	}
+
+	/**
+	 * 
+	 * @param sessionFactory
+	 *            A pre configured factory instance.
+	 */
+	public void setSessionFactory(SqlSessionFactory sessionFactory) {
+		if (sessionFactory != null) {
+			this.sessionFactory = sessionFactory;
+		}
 	}
 
 }

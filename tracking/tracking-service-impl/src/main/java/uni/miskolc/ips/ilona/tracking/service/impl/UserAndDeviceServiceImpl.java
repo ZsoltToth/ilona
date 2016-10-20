@@ -286,7 +286,9 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 	 *            interface: {@link UserAndDeviceDAO}
 	 */
 	public void setUserDeviceDAO(UserAndDeviceDAO userDeviceDAO) {
-		this.userDeviceDAO = userDeviceDAO;
+		if (userDeviceDAO != null) {
+			this.userDeviceDAO = userDeviceDAO;
+		}
 	}
 
 }

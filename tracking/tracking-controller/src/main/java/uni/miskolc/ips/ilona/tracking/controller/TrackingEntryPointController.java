@@ -117,19 +117,13 @@ public class TrackingEntryPointController {
 			return new ModelAndView("tracking/mainpageHome");
 		}
 
-		System.out.println(authentication.getClass().getName());
-
 		/*
 		 * If the current user is not autthenticated (anonymus) the returned
 		 * page will be the tracking login page.
 		 */
-		if (authentication != null) {
-			logger.info("Anonymus authentication request!");
-
-			for (GrantedAuthority role : authentication.getAuthorities()) {
-				if (role.getAuthority().equals("ROLE_ANONYMOUS")) {
-					return new ModelAndView("tracking/mainpageHome");
-				}
+		for (GrantedAuthority role : authentication.getAuthorities()) {
+			if (role.getAuthority().equals("ROLE_ANONYMOUS")) {
+				return new ModelAndView("tracking/mainpageHome");
 			}
 		}
 
@@ -160,24 +154,20 @@ public class TrackingEntryPointController {
 	}
 
 	/**
-	 * This method sends back the login page for the tracking main page.
 	 * 
-	 * @return
-	 * 
-	 * @RequestMapping(value = "/login", method = { RequestMethod.GET,
-	 *                       RequestMethod.POST }) public ModelAndView
-	 *                       loadTrackingLoginpage() { ModelAndView loginpage =
-	 *                       new ModelAndView("tracking/loginpage"); return
-	 *                       loginpage; }
+	 * @return The login page.
 	 */
-
 	@RequestMapping(value = "/getmainpagehome", method = { RequestMethod.POST })
 	public ModelAndView generateMainpageHome() {
 		return new ModelAndView("tracking/mainpageHome");
 	}
 
+	/**
+	 * 
+	 * @return the user signup page
+	 */
 	@RequestMapping(value = "/getmainpagesignup", method = { RequestMethod.POST })
-	public ModelAndView generateMainpageSignup() throws InterruptedException {
+	public ModelAndView generateMainpageSignup() {
 		ModelAndView mav = new ModelAndView("tracking/mainpageSignup");
 		mav.addObject("useridRestriction", WebpageInformationProvider.getUseridRestrictionMessage());
 		mav.addObject("usernameRestriction", WebpageInformationProvider.getUsernameRestrictionMessage());
@@ -187,6 +177,12 @@ public class TrackingEntryPointController {
 		return mav;
 	}
 
+	/**
+	 * 
+	 * @param error
+	 *            
+	 * @return
+	 */
 	@RequestMapping(value = "/getloginpage", method = { RequestMethod.POST, RequestMethod.GET })
 	public ModelAndView generateLoginpage(@RequestParam(value = "error", required = false) String error) {
 		ModelAndView mav = new ModelAndView("tracking/loginpage");
@@ -211,6 +207,9 @@ public class TrackingEntryPointController {
 	@ResponseBody
 	public ExecutionResultDTO registerUser(@ModelAttribute(name = "user") UserCreationDTO user) {
 
+		/*
+		 * Input validation.
+		 */
 		ExecutionResultDTO result = new ExecutionResultDTO(100, new ArrayList<String>());
 		try {
 			ValidityStatusHolder errors = new ValidityStatusHolder();
@@ -284,11 +283,15 @@ public class TrackingEntryPointController {
 	}
 
 	/**
-	 * DOC! 100: OK 200: Invalid Parameter 400: service error 600: User not
-	 * found
 	 * 
 	 * @param userid
-	 * @return
+	 * @return {@link ExecutionResultDTO}<br>
+	 *         <ul>
+	 *         <li>100: OK</li>
+	 *         <li>200: Parameter error</li>
+	 *         <li>400: Service error</li>
+	 *         <li>600: Duplicated user error</li>
+	 *         </ul>
 	 */
 	@RequestMapping(value = "/resetpassword", method = { RequestMethod.POST })
 	@ResponseBody
@@ -320,12 +323,18 @@ public class TrackingEntryPointController {
 	}
 
 	/**
-	 * DOC! 100: OK 200: parameter error 300: token validity error 400: service
-	 * 600: user not found
 	 * 
 	 * @param userid
 	 * @param token
-	 * @return
+	 *            requested token id
+	 * @return {@link ExecutionResultDTO}<br>
+	 *         <ul>
+	 *         <li>100: OK</li>
+	 *         <li>200: Parameter error</li>
+	 *         <li>300: Validity error</li>
+	 *         <li>400: Service error</li>
+	 *         <li>600: Duplicated user error</li>
+	 *         </ul>
 	 */
 	@RequestMapping(value = "/passwordrequestwithtoken", method = { RequestMethod.POST })
 	@ResponseBody
@@ -370,19 +379,27 @@ public class TrackingEntryPointController {
 	}
 
 	public void setUserDeviceService(UserAndDeviceService userDeviceService) {
-		this.userDeviceService = userDeviceService;
+		if (userDeviceService != null) {
+			this.userDeviceService = userDeviceService;
+		}
 	}
 
 	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
+		if (passwordEncoder != null) {
+			this.passwordEncoder = passwordEncoder;
+		}
 	}
 
 	public void setCentralManager(TrackingModuleCentralManager centralManager) {
-		this.centralManager = centralManager;
+		if (centralManager != null) {
+			this.centralManager = centralManager;
+		}
 	}
 
 	public void setPasswordRecoveryManager(PasswordRecoveryManager passwordRecoveryManager) {
-		this.passwordRecoveryManager = passwordRecoveryManager;
+		if (passwordRecoveryManager != null) {
+			this.passwordRecoveryManager = passwordRecoveryManager;
+		}
 	}
 
 }

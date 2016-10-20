@@ -4,6 +4,15 @@ var oneDay = 86400000;
 var oneHour = 3600000;
 var oneMinute = 60000;
 
+/**
+ * Calculate the day hour minute values after a timestamp.
+ * 
+ * @param time
+ *            An integer value. This represents the timestamp.
+ * @returns A data object, propeties: <br/> days: the number of the days. <br />
+ *          hours: The number of the hours. <br/> minutes: The number of the
+ *          minutes.
+ */
 function calculateDayHourMinute(time) {
 	try {
 		var temp = time;
@@ -35,6 +44,14 @@ function calculateDayHourMinute(time) {
 	}
 }
 
+/**
+ * Calculate the year month day hour values after a timestamp.
+ * 
+ * @param time
+ *            An integer date value.
+ * @returns The following data object with properties: <br/> years <br/> months
+ *          </br> days <br/> hours
+ */
 function calculateYearMonthDayHour(time) {
 	try {
 		var expirationTemp = time;
@@ -82,6 +99,11 @@ function calculateYearMonthDayHour(time) {
 	}
 }
 
+/**
+ * Calculate and refresh the value. <br/> Attributes: <br/> data-element: select
+ * the data element from states. data-expirationtime
+ * 
+ */
 $(".adminCentManAccountChangeValueInMillisClass").click(function(event) {
 	try {
 
@@ -102,7 +124,7 @@ $(".adminCentManAccountChangeValueInMillisClass").click(function(event) {
 			dependency.calculate = calculateDayHourMinute;
 			dependency.format = generateDaysHoursMinutesText;
 		}
-		
+
 		if ($(this).attr("data-execute") == "value") {
 			dependency.calculate = function(data) {
 				return data;
@@ -282,63 +304,76 @@ function generateText(data) {
 	}
 }
 
-$(".centManUpdateLongValue").click(function(event){
-	try {
-		var elementName = $(this).attr("data-element");
-		var lock = states[elementName + "Lock"];
-		if(lock.value == true) {
-			lock.value = false;
-		} else {
-			return;
-		}			
-		
-		var elementValue = states[elementName];			
-		var url = $(this).attr("data-url");
-		var resultDiv = $(this).attr("data-result");
-		
-		$.ajax({
-			type: "POST",
-			async: true,
-			url: url,
-			timeout: 10000,
-			data: {data: elementValue},
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader($("meta[name='_csrf_header']").attr(
-						"content"), $("meta[name='_csrf']").attr("content"));
-			},
-			success : function(result, status, xhr) {
-				try {
-					lock.value = true;
-					if (result.responseState == 100) {
-						$("#" + resultDiv).html(
-								"<p class='bg-primary'>Update success!</p>");
-						return;
-					} 				
-					if(result.responseState == 300) {
-						$("#" + resultDiv).html(
-							"<p class='bg-primary'>Invalid parameter!</p>");
-						return;
-					} else {
-						$("#" + resultDiv).html(
-								"<p class='bg-primary'>Update failed!!</p>");
+$(".centManUpdateLongValue")
+		.click(
+				function(event) {
+					try {
+						var elementName = $(this).attr("data-element");
+						var lock = states[elementName + "Lock"];
+						if (lock.value == true) {
+							lock.value = false;
+						} else {
+							return;
+						}
+
+						var elementValue = states[elementName];
+						var url = $(this).attr("data-url");
+						var resultDiv = $(this).attr("data-result");
+
+						$
+								.ajax({
+									type : "POST",
+									async : true,
+									url : url,
+									timeout : 10000,
+									data : {
+										data : elementValue
+									},
+									beforeSend : function(xhr) {
+										xhr.setRequestHeader($(
+												"meta[name='_csrf_header']")
+												.attr("content"), $(
+												"meta[name='_csrf']").attr(
+												"content"));
+									},
+									success : function(result, status, xhr) {
+										try {
+											lock.value = true;
+											if (result.responseState == 100) {
+												$("#" + resultDiv)
+														.html(
+																"<p class='bg-primary'>Update success!</p>");
+												return;
+											}
+											if (result.responseState == 300) {
+												$("#" + resultDiv)
+														.html(
+																"<p class='bg-primary'>Invalid parameter!</p>");
+												return;
+											} else {
+												$("#" + resultDiv)
+														.html(
+																"<p class='bg-primary'>Update failed!!</p>");
+											}
+										} catch (error) {
+											console.log(error);
+										}
+									},
+									error : function(xhr, status, error) {
+										try {
+											lock.value = true;
+											$("#" + resultDiv)
+													.html(
+															"<p class='bg-primary'>Update failed!!</p>");
+											console.log("" + status + " "
+													+ error);
+										} catch (err) {
+											console.log(err);
+										}
+									}
+								});
+					} catch (error) {
+						lock.value = true;
+						console.log(error);
 					}
-				} catch (error) {
-					console.log(error);
-				}
-			},
-			error : function(xhr, status, error) {
-				try {
-					lock.value = true;
-					$("#" + resultDiv).html(
-							"<p class='bg-primary'>Update failed!!</p>");
-					console.log("" + status + " " + error);
-				} catch (err) {
-					console.log(err);
-				}
-			}
-		});			
-	} catch(error) {
-		lock.value = true;
-		console.log(error);
-	}
-});
+				});

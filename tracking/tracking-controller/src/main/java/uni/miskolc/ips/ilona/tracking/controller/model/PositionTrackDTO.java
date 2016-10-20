@@ -5,6 +5,11 @@ import java.util.Date;
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
 
+/**
+ * 
+ * @author Patrik
+ *
+ */
 public class PositionTrackDTO {
 
 	private Position position;

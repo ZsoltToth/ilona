@@ -143,7 +143,9 @@ public class TrackingServiceImpl implements TrackingService {
 	 *            Implements the {@link TrackingDAO} interface.
 	 */
 	public void setTrackingDAO(TrackingDAO trackingDAO) {
-		this.trackingDAO = trackingDAO;
+		if (trackingDAO != null) {
+			this.trackingDAO = trackingDAO;
+		}
 	}
 
 }

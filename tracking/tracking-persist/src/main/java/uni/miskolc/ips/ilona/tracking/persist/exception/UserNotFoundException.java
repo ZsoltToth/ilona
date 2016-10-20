@@ -1,5 +1,11 @@
 package uni.miskolc.ips.ilona.tracking.persist.exception;
 
+/**
+ * The current user is not found.
+ * 
+ * @author Patrik
+ *
+ */
 public class UserNotFoundException extends UserDAOException {
 
 	/**

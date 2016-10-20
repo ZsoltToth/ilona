@@ -1,5 +1,11 @@
 package uni.miskolc.ips.ilona.tracking.persist.exception;
 
+/**
+ * The current token is not found.
+ * 
+ * @author Patrik
+ *
+ */
 public class PasswordRecoveryTokenNotFoundException extends PasswordRecoveryException {
 
 	/**

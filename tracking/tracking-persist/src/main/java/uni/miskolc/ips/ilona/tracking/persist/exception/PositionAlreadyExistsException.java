@@ -1,5 +1,11 @@
 package uni.miskolc.ips.ilona.tracking.persist.exception;
 
+/**
+ * The position is already exists in the system.
+ * 
+ * @author Patrik
+ *
+ */
 public class PositionAlreadyExistsException extends TrackingException {
 
 	/**

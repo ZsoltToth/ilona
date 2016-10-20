@@ -37,6 +37,21 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 	public MySqlAndMybatisTrackingDAOImpl() {
 	}
 
+	/**
+	 * 
+	 * @param host
+	 *            Database host.
+	 * @param port
+	 *            Database port.
+	 * @param database
+	 *            Database name.
+	 * @param user
+	 *            Database username.
+	 * @param password
+	 *            Database password.
+	 * @throws FileNotFoundException
+	 *             Mybatis config file not found error.
+	 */
 	public MySqlAndMybatisTrackingDAOImpl(final String host, final int port, final String database, final String user,
 			final String password) throws FileNotFoundException {
 		ClassLoader loader = getClass().getClassLoader();
@@ -125,6 +140,12 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 		}
 	}
 
+	/**
+	 * The
+	 * 
+	 * @param mapper
+	 * @return
+	 */
 	private TrackPosition positionMapping(TrackPositionMapper mapper) {
 		TrackPosition trackPosition = new TrackPosition();
 		// Position
@@ -155,6 +176,16 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 		trackPosition.setTrackTime(date);
 		trackPosition.setPosition(pos);
 		return trackPosition;
+	}
+
+	/**
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SqlSessionFactory sessionFactory) {
+		if (sessionFactory != null) {
+			this.sessionFactory = sessionFactory;
+		}
 	}
 
 }

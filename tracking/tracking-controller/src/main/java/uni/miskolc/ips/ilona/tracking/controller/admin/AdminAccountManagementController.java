@@ -41,6 +41,10 @@ public class AdminAccountManagementController {
 	@Resource(name = "trackingCentralManager")
 	private TrackingModuleCentralManager centralManager;
 
+	/**
+	 * 
+	 * @return The account management page.
+	 */
 	@RequestMapping(value = "/accountmanagement", method = { RequestMethod.POST })
 	public ModelAndView createAdminAccountManagementpage() {
 		ModelAndView mav = new ModelAndView("tracking/admin/accountManagement");
@@ -70,7 +74,13 @@ public class AdminAccountManagementController {
 	 * DOC! 100: OK 200: parameter error 300: validity error 400: service error
 	 * 
 	 * @param user
-	 * @return
+	 * @return {@link ExecutionResultDTO}<br>
+	 *         <ul>
+	 *         <li>100: OK</li>
+	 *         <li>200: Parameter error</li>
+	 *         <li>300: Validity error</li>
+	 *         <li>400: Service error</li>
+	 *         </ul>
 	 */
 	@RequestMapping(value = "/accountchangepassword", method = { RequestMethod.POST })
 	@ResponseBody
@@ -122,6 +132,18 @@ public class AdminAccountManagementController {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param user
+	 *            {@link UserBaseDetailsDTO} populated after the parameters.
+	 * @return {@link ExecutionResultDTO}<br>
+	 *         <ul>
+	 *         <li>100: OK</li>
+	 *         <li>200: Parameter error</li>
+	 *         <li>300: Validity error</li>
+	 *         <li>400: Service error</li>
+	 *         </ul>
+	 */
 	@RequestMapping(value = "/accountchangedetails", method = { RequestMethod.POST })
 	@ResponseBody
 	public ExecutionResultDTO changeAccountDetailsHandler(@ModelAttribute() UserBaseDetailsDTO user) {
@@ -140,6 +162,7 @@ public class AdminAccountManagementController {
 			errors.appendValidityStatusHolder(ValidateUserData.validateEmail(user.getEmail()));
 
 			if (!errors.isValid()) {
+				result.setResponseState(300);
 				result.setMessages(errors.getErrors());
 				return result;
 			}
@@ -173,15 +196,21 @@ public class AdminAccountManagementController {
 	}
 
 	public void setUserDeviceService(UserAndDeviceService userDeviceService) {
-		this.userDeviceService = userDeviceService;
+		if (userDeviceService != null) {
+			this.userDeviceService = userDeviceService;
+		}
 	}
 
 	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
+		if (passwordEncoder != null) {
+			this.passwordEncoder = passwordEncoder;
+		}
 	}
 
 	public void setCentralManager(TrackingModuleCentralManager centralManager) {
-		this.centralManager = centralManager;
+		if (centralManager != null) {
+			this.centralManager = centralManager;
+		}
 	}
 
 }

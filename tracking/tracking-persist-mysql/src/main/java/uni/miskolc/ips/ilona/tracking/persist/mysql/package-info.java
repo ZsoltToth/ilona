@@ -1,5 +1,6 @@
 /**
- * This package contains the shared models of the tracking module.
+ * This package contains the tracking persist interface implementations or
+ * another database daos.
  * 
  * @author Patrik / A5USL0
  * 

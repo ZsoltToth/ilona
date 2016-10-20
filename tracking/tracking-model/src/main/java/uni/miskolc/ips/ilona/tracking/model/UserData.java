@@ -8,12 +8,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-
-import javax.xml.soap.Node;
 
 /**
- * Dokumentáció készítése!
+ * Tracking system user details model class.
  * 
  * @author Patrik / A5USL0
  *
@@ -84,12 +81,12 @@ public class UserData implements Comparable<UserData>, Serializable, Cloneable {
 	private boolean nonLocked;
 
 	/**
-	 * Hibás bejelentkezések
+	 * 
 	 */
 	private Collection<Date> badLogins;
 
 	/**
-	 * Eszközök az adott felhasználóhoz.
+	 * 
 	 */
 	private Collection<DeviceData> devices;
 
@@ -297,11 +294,11 @@ public class UserData implements Comparable<UserData>, Serializable, Cloneable {
 		if (noDevice == null) {
 			return null;
 		}
-		
+
 		Collection<DeviceData> removableDevs = new ArrayList<DeviceData>();
 		String devid = noDevice.getDeviceid();
-		for(DeviceData dev : devices) {
-			if(dev.getDeviceid().equals(devid)) {
+		for (DeviceData dev : devices) {
+			if (dev.getDeviceid().equals(devid)) {
 				removableDevs.add(dev);
 			}
 		}

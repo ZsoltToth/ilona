@@ -1,5 +1,5 @@
 /**
- * This package contains the shared models of the tracking module.
+ * This package contains the exceptions related to the controller operations.
  * 
  * @author Patrik / A5USL0
  * 

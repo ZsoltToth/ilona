@@ -23,6 +23,13 @@ import uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException;
 import uni.miskolc.ips.ilona.tracking.persist.mysql.mappers.SecurityFunctionsUserMapper;
 import uni.miskolc.ips.ilona.tracking.persist.mysql.model.PasswordRecoveryTokenMapper;
 
+/**
+ * This class implements the {@link SecurityFunctionsDAO} interface. <br/>
+ * Tracking module security dao.
+ * 
+ * @author Patrik
+ *
+ */
 public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunctionsDAO {
 
 	private static Logger logger = LogManager.getLogger(MySqlAndMybatisSecurityFunctionsDAOImpl.class);
@@ -33,6 +40,22 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 
 	}
 
+	/**
+	 * 
+	 * @param host
+	 *            Database host.
+	 * @param port
+	 *            Database port.
+	 * @param database
+	 *            Database name.
+	 * @param user
+	 *            Username.
+	 * @param password
+	 *            Password.
+	 * @throws FileNotFoundException
+	 *             if the mybatis-configuration.xml is not in the resource
+	 *             folder.
+	 */
 	public MySqlAndMybatisSecurityFunctionsDAOImpl(final String host, final int port, final String database,
 			final String user, final String password) throws FileNotFoundException {
 		ClassLoader loader = getClass().getClassLoader();
@@ -166,8 +189,7 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 	}
 
 	@Override
-	public Collection<Date> loadBadLogins(String userid)
-			throws OperationExecutionErrorException {
+	public Collection<Date> loadBadLogins(String userid) throws OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
 			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
@@ -220,6 +242,9 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 			throws UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
+			if (lockedUntil == null) {
+				lockedUntil = new Date();
+			}
 			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
 			Double millisecDate = lockedUntil.getTime() * 0.001;
 			int updated = mapper.updateLockedAndUntilLocked(userid, nonLocked, millisecDate);
@@ -273,13 +298,13 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 	}
 
 	@Override
-	public PasswordRecoveryToken restorePasswordResetToken(PasswordRecoveryToken token)
+	public PasswordRecoveryToken restorePasswordResetToken(String userid)
 			throws PasswordRecoveryTokenNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		PasswordRecoveryToken recoveryToken = new PasswordRecoveryToken();
 		try {
 			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
-			PasswordRecoveryTokenMapper tokenMapper = mapper.readPasswordToken(token.getUserid());
+			PasswordRecoveryTokenMapper tokenMapper = mapper.readPasswordToken(userid);
 
 			if (tokenMapper == null) {
 				throw new PasswordRecoveryTokenNotFoundException("Token not found!");
@@ -290,22 +315,17 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 			recoveryToken.setTokenValidUntil(new Date(tokenMapper.getValidUntil()));
 
 		} catch (Exception e) {
-			String tokenMessage = "Token is null!";
-			if (token != null) {
-				tokenMessage = token.toString();
-			}
+
 			if (e instanceof PasswordRecoveryTokenNotFoundException) {
 
-				logger.error("Password recovery token not found: Token details:" + tokenMessage + " Error: "
-						+ e.getMessage());
-				throw new OperationExecutionErrorException("Password recovery token not found: Token details:"
-						+ tokenMessage + " Error: " + e.getMessage(), e);
+				logger.error(
+						"Password recovery token not found: Token details:" + userid + " Error: " + e.getMessage());
+				throw new OperationExecutionErrorException(
+						"Password recovery token not found: Token details:" + userid + " Error: " + e.getMessage(), e);
 			}
-			logger.error(
-					"Password recovery database error: Token details:" + tokenMessage + " Error: " + e.getMessage());
+			logger.error("Password recovery database error: Token details:" + userid + " Error: " + e.getMessage());
 			throw new OperationExecutionErrorException(
-					"Password recovery token not found: Token details:" + tokenMessage + " Error: " + e.getMessage(),
-					e);
+					"Password recovery token not found: Token details:" + userid + " Error: " + e.getMessage(), e);
 		} finally {
 			session.close();
 		}
@@ -326,4 +346,14 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 
 	}
 
+	/**
+	 * 
+	 * @param sessionFactory
+	 *            A pre condigured session factory {@link SqlSessionFactory}
+	 */
+	public void setSessionFactory(SqlSessionFactory sessionFactory) {
+		if (sessionFactory != null) {
+			this.sessionFactory = sessionFactory;
+		}
+	}
 }

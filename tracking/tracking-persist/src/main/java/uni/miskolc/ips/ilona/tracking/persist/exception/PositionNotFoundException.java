@@ -1,5 +1,11 @@
 package uni.miskolc.ips.ilona.tracking.persist.exception;
 
+/**
+ * The position is not found in the system.
+ * 
+ * @author Patrik
+ *
+ */
 public class PositionNotFoundException extends TrackingException {
 
 	/**
