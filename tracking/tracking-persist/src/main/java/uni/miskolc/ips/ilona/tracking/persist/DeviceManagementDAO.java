@@ -7,6 +7,7 @@ import uni.miskolc.ips.ilona.tracking.model.UserData;
 import uni.miskolc.ips.ilona.tracking.persist.exception.DeviceAlreadyExistsException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.OperationExecutionErrorException;
+import uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException;
 
 /**
  * General device management DAO interface.
@@ -29,7 +30,7 @@ public interface DeviceManagementDAO {
 	 *             General execution error.
 	 */
 	void storeDevice(DeviceData device, UserData user)
-			throws DeviceAlreadyExistsException, OperationExecutionErrorException;
+			throws DeviceAlreadyExistsException, UserNotFoundException, OperationExecutionErrorException;
 
 	/**
 	 * Loads the current device.
@@ -45,7 +46,7 @@ public interface DeviceManagementDAO {
 	 *             General error.
 	 */
 	DeviceData readDevice(String deviceid, UserData user)
-			throws DeviceNotFoundException, OperationExecutionErrorException;
+			throws DeviceNotFoundException, UserNotFoundException, OperationExecutionErrorException;
 
 	/**
 	 * Loads the user devices.
@@ -56,7 +57,8 @@ public interface DeviceManagementDAO {
 	 * @throws OperationExecutionErrorException
 	 *             General error.
 	 */
-	Collection<DeviceData> readUserDevices(UserData user) throws OperationExecutionErrorException;
+	Collection<DeviceData> readUserDevices(UserData user)
+			throws UserNotFoundException, OperationExecutionErrorException;
 
 	/**
 	 * Updates the selected device.

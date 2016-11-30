@@ -82,7 +82,7 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 			logger.error("No user exists with id: " + userid);
 			throw new UserNotFoundException("No user exists with id: " + userid, e);
 		} catch (Exception e) {
-			logger.error("User load failedm general error! ");
+			logger.error("User load failed general error! ");
 			throw new ServiceGeneralErrorException("User load failed, general error! ", e);
 		}
 		return user;
@@ -95,7 +95,7 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 		try {
 			users = userDeviceDAO.getAllUsers();
 		} catch (Exception e) {
-			logger.error("There was an error while laoding users!");
+			logger.error("There was an error while loading users!");
 			throw new ServiceGeneralErrorException("There was an error while laoding users!", e);
 		}
 		return users;

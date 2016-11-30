@@ -56,9 +56,11 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 	 */
 	public MySqlAndMybatisUserAndDeviceDAOImplementation(final String configFilePath, final String host, final int port,
 			final String database, final String user, final String password) throws FileNotFoundException {
-		File configFile = new File(configFilePath);
+		// File configFile = new File(configFilePath);
 		// new File("src/main/resources/mybatis-configuration.xml");
-		InputStream inputStream = new FileInputStream(configFile);
+		// InputStream inputStream = new FileInputStream(configFile);
+		ClassLoader loader = getClass().getClassLoader();
+		InputStream inputStream = loader.getResourceAsStream("mybatis-configurationa.xml");
 		String urlPattern = "jdbc:mysql://%s:%s/%s";
 		String connectionURL = String.format(urlPattern, host, port, database);
 		Properties props = new Properties();
@@ -243,13 +245,20 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 
 	@Override
 	public void storeDevice(DeviceData device, UserData user)
-			throws DeviceAlreadyExistsException, OperationExecutionErrorException {
+			throws DeviceAlreadyExistsException, UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
 			UserAndDeviceMapper mapper = session.getMapper(UserAndDeviceMapper.class);
+			if (mapper.getUserBaseData(user.getUserid()) == null) {
+				throw new UserNotFoundException("User not found with id: " + user.getUserid());
+			}
 			mapper.storeDevice(device, user);
 			session.commit();
 		} catch (Exception e) {
+			if (e instanceof UserNotFoundException) {
+				logger.error("User not found!" + e.getMessage());
+				throw new UserNotFoundException(e);
+			}
 			if (e.getCause() instanceof MySQLIntegrityConstraintViolationException) {
 				String deviceid = "NULL";
 				if (device != null) {
@@ -267,17 +276,25 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 
 	@Override
 	public DeviceData readDevice(String deviceid, UserData user)
-			throws DeviceNotFoundException, OperationExecutionErrorException {
+			throws DeviceNotFoundException, UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 
 		try {
 			UserAndDeviceMapper mapper = session.getMapper(UserAndDeviceMapper.class);
+			if (mapper.getUserBaseData(user.getUserid()) == null) {
+				throw new UserNotFoundException("User not found with id: " + user.getUserid());
+			}
 			DeviceData device = mapper.getDevice(deviceid, user.getUserid());
 			if (device == null) {
 				throw new DeviceNotFoundException();
 			}
 			return device;
 		} catch (Exception e) {
+			if (e instanceof UserNotFoundException) {
+				logger.error("User not found!" + e.getMessage());
+				throw new UserNotFoundException(e);
+			}
+
 			if (e instanceof DeviceNotFoundException) {
 				throw new DeviceNotFoundException("Device not found with id: " + deviceid, e);
 			}
@@ -290,16 +307,24 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 	}
 
 	@Override
-	public Collection<DeviceData> readUserDevices(UserData user) throws OperationExecutionErrorException {
+	public Collection<DeviceData> readUserDevices(UserData user)
+			throws UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		Collection<DeviceData> devices = new ArrayList<DeviceData>();
 		try {
 			UserAndDeviceMapper mapper = session.getMapper(UserAndDeviceMapper.class);
+			if (mapper.getUserBaseData(user.getUserid()) == null) {
+				throw new UserNotFoundException("User not found with id: " + user.getUserid());
+			}
 			devices = mapper.getUserDevices(user);
 			if (devices == null) {
 				devices = new ArrayList<DeviceData>();
 			}
 		} catch (Exception e) {
+			if (e instanceof UserNotFoundException) {
+				logger.error("User not found!" + e.getMessage());
+				throw new UserNotFoundException(e);
+			}
 			logger.error("Error message: " + e.getMessage());
 			throw new OperationExecutionErrorException("Error: " + e.getMessage());
 		} finally {

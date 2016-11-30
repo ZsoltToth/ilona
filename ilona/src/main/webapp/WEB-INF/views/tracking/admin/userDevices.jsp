@@ -305,6 +305,28 @@
 				}]
 			});
 			
+			$('#adminUserDevDevicesTable tfoot th').each( function (value, index) {
+				if(value < 3) {
+					var title = $(this).text();
+		        	$(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+				}
+		    } );
+			
+			adminAccDevDevicesDataTable.columns().every( function (index) {
+				
+		        if(index < 3) {
+					var that = this;
+			 
+			        $( 'input', this.footer() ).on( 'keyup change', function () {
+			            if ( that.search() !== this.value ) {
+			                that
+			                    .search( this.value )
+			                    .draw();
+			            }
+			        } );
+		        }
+		    } );
+			
 			$('#adminUserDevDevicesTable tbody').on( 'click', 'tr', function () {			 
 		        if ( $(this).hasClass('selected') ) {
 		            $(this).removeClass('selected');

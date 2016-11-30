@@ -13,6 +13,10 @@
 			type="uni.miskolc.ips.ilona.tracking.persist.mysql.model.PersistenceTokenMapper" />
 		<typeAlias alias="trackPosMapper"
 			type="uni.miskolc.ips.ilona.tracking.persist.mysql.model.TrackPositionMapper" />
+			<typeAlias alias="UserData"
+			type="uni.miskolc.ips.ilona.tracking.model.UserData" />
+		<typeAlias alias="DeviceData"
+			type="uni.miskolc.ips.ilona.tracking.model.DeviceData" />
 	</typeAliases>
 
 	<typeHandlers>
@@ -38,6 +42,8 @@
 			resource="uni/miskolc/ips/ilona/tracking/persist/mysql/mappers/RememberMeTokenMapper.xml" />
 		<mapper
 			resource="uni/miskolc/ips/ilona/tracking/persist/mysql/mappers/TrackMapper.xml" />
+		<mapper
+			resource="uni/miskolc/ips/ilona/tracking/persist/mysql/mappers/UserAndDeviceMapper.xml" />
 
 	</mappers>
 </configuration>
