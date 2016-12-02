@@ -21,11 +21,14 @@ import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
 import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
+import uni.miskolc.ips.ilona.tracking.persist.DeviceManagementDAO;
 import uni.miskolc.ips.ilona.tracking.persist.TrackingDAO;
+import uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.OperationExecutionErrorException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.PositionAlreadyExistsException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.PositionNotFoundException;
 import uni.miskolc.ips.ilona.tracking.persist.mysql.mappers.TrackMapper;
+import uni.miskolc.ips.ilona.tracking.persist.mysql.mappers.UserAndDeviceMapper;
 import uni.miskolc.ips.ilona.tracking.persist.mysql.model.TrackPositionMapper;
 
 public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
@@ -70,9 +73,15 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 
 	@Override
 	public void storePosition(DeviceData device, Position position)
-			throws PositionAlreadyExistsException, OperationExecutionErrorException {
+			throws DeviceNotFoundException, PositionAlreadyExistsException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
+
+			TrackMapper mapper = session.getMapper(TrackMapper.class);
+			if (mapper.checkDevice(device.getDeviceid()) == 0) {
+				throw new DeviceNotFoundException("Device not found with id: " + device.getDeviceid());
+			}
+
 			String deviceid = device.getDeviceid();
 			UUID positionid = position.getUUID();
 			Coordinate coord = position.getCoordinate();
@@ -80,12 +89,14 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 
 			double trackTime = (new Date()).getTime() * 0.001;
 
-			TrackMapper mapper = session.getMapper(TrackMapper.class);
 			mapper.storePositionLocation(deviceid, positionid.toString(), trackTime);
 
 			mapper.storePosition(position.getUUID().toString(), coord.getX(), coord.getY(), coord.getZ(),
 					zone.getId().toString(), zone.getName());
 			session.commit();
+		} catch (DeviceNotFoundException e) {
+			logger.error("Device not found! " + e.getMessage());
+			throw new DeviceNotFoundException("Device not found! " + e.getMessage());
 		} catch (Exception e) {
 			if (e.getCause() instanceof MySQLIntegrityConstraintViolationException) {
 				logger.info("Duplicated device with id: " + position.getUUID().toString());
@@ -100,18 +111,28 @@ public class MySqlAndMybatisTrackingDAOImpl implements TrackingDAO {
 
 	@Override
 	public Collection<TrackPosition> restorePositionsInterval(DeviceData device, Date from, Date to)
-			throws OperationExecutionErrorException {
+			throws DeviceNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 
 		try {
 			TrackMapper mapper = session.getMapper(TrackMapper.class);
+			if (mapper.checkDevice(device.getDeviceid()) == 0) {
+				throw new DeviceNotFoundException("Device not found with id: " + device.getDeviceid());
+			}
+
 			Collection<TrackPositionMapper> mapperColl = mapper.getTrackPositionsInterval(device.getDeviceid(), from,
 					to);
+			if(mapperColl == null) {
+				return new ArrayList<TrackPosition>();
+			}
 			Collection<TrackPosition> positions = new ArrayList<>(mapperColl.size());
 			for (TrackPositionMapper trackPosMapper : mapperColl) {
 				positions.add(positionMapping(trackPosMapper));
 			}
 			return positions;
+		} catch (DeviceNotFoundException e) {
+			logger.error("Device not found! " + e.getMessage());
+			throw new DeviceNotFoundException("Device not found! " + e.getMessage());
 		} catch (Exception e) {
 			logger.error("Error: " + e.getMessage());
 			throw new OperationExecutionErrorException("Operation error", e);

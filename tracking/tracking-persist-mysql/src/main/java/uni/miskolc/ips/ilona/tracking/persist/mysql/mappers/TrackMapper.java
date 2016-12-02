@@ -18,6 +18,8 @@ public interface TrackMapper {
 
 	TrackPositionMapper getTrackPosition(@Param(value = "positionid") String positionid);
 
-	Collection<TrackPositionMapper> getTrackPositionsInterval(@Param(value = "deviceid") String deviceid, @Param(value = "from") Date from,
-			@Param(value = "to") Date to);
+	Collection<TrackPositionMapper> getTrackPositionsInterval(@Param(value = "deviceid") String deviceid,
+			@Param(value = "from") Date from, @Param(value = "to") Date to);
+
+	int checkDevice(@Param(value = "deviceid") String deiceid);
 }

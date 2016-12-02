@@ -18,6 +18,7 @@ import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
 import uni.miskolc.ips.ilona.tracking.persist.TrackingDAO;
 import uni.miskolc.ips.ilona.tracking.persist.exception.PositionAlreadyExistsException;
 import uni.miskolc.ips.ilona.tracking.service.TrackingService;
+import uni.miskolc.ips.ilona.tracking.service.exceptions.DeviceNotFoundException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.DuplicatedPositionException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.InvalidMeasurementException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.ServiceGeneralErrorException;
@@ -78,9 +79,12 @@ public class TrackingServiceImpl implements TrackingService {
 
 	@Override
 	public void storePosition(DeviceData device, Position position)
-			throws DuplicatedPositionException, ServiceGeneralErrorException {
+			throws DeviceNotFoundException, DuplicatedPositionException, ServiceGeneralErrorException {
 		try {
 			trackingDAO.storePosition(device, position);
+		} catch (uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException e) {
+			logger.error("Error: " + e.getMessage());
+			throw new DeviceNotFoundException();
 		} catch (Exception e) {
 			if (e instanceof PositionAlreadyExistsException) {
 				logger.info("Dupliated device");
@@ -93,9 +97,12 @@ public class TrackingServiceImpl implements TrackingService {
 
 	@Override
 	public Collection<TrackPosition> getPositions(DeviceData device, Date from, Date to)
-			throws ServiceGeneralErrorException {
+			throws DeviceNotFoundException, ServiceGeneralErrorException {
 		try {
 			return trackingDAO.restorePositionsInterval(device, from, to);
+		} catch (uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException e) {
+			logger.error("Error: " + e.getMessage());
+			throw new DeviceNotFoundException();
 		} catch (Exception e) {
 			logger.error("Error: " + e.getMessage());
 			throw new ServiceGeneralErrorException("Error", e);
@@ -124,7 +131,9 @@ public class TrackingServiceImpl implements TrackingService {
 	 *            Implements the {@link PositionService} interface.
 	 */
 	public void setPositionService(PositioningService positionService) {
-		this.positionService = positionService;
+		if (positionService != null) {
+			this.positionService = positionService;
+		}
 	}
 
 	/**

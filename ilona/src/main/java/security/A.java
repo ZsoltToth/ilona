@@ -14,7 +14,7 @@ public class A {
 	public static void main(String[] Args) {
 		BCryptPasswordEncoder enc = new BCryptPasswordEncoder(10);
 		
-		String encoded = enc.encode("patriku");
+		String encoded = enc.encode("user");
 		System.out.println(encoded.length() + "  " + encoded);
 
 		System.out.println(enc.matches("ilona", encoded));

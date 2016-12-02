@@ -105,7 +105,7 @@
 				<version>2.12.4</version>
 				<configuration>
 					<excludes>
-						<exclude>**/*IntegrationTest.java</exclude>
+						<exclude>**/Test*.java</exclude>
 					</excludes>
 
 				</configuration>
@@ -129,7 +129,7 @@
 								<exclude>none</exclude>
 							</excludes>
 							<includes>
-								<include>**/*IntegrationTest.java</include>
+								<include>**/Test*.java</include>
 							</includes>
 						</configuration>
 					</execution>
@@ -145,7 +145,7 @@
 			<properties>
 				<database.host>localhost</database.host>
 				<database.port>3306</database.port>
-				<database.db>Ilona</database.db>
+				<database.db>ilonatest</database.db>
 				<database.user>ilona</database.user>
 				<database.password>ilona</database.password>
 			</properties>

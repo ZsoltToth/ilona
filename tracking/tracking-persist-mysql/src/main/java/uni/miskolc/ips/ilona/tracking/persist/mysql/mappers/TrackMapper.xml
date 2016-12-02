@@ -34,6 +34,11 @@
 		a.meastime &lt; #{to};
 	</select>
 
+	<select id="checkDevice" resultType="int">
+		select count(deviceid) from
+		trackingdevices where deviceid = #{deviceid};
+	</select>
+
 	<insert id="storePositionLocation">
 		insert into trackinglocations
 		values(#{deviceid},

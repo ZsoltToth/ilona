@@ -192,14 +192,17 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 			mapper.createUserRoles(user);
 
 			mapper.deleteLoginAttempts(user.getUserid(), new Date());
-			if (user.getBadLogins().size() != 0) {
+			Collection<Date> badLogins = user.getBadLogins();
+			if (badLogins != null) {
+				if (badLogins.size() != 0) {
 
-				// mapper.storeLoginAttempts(user);
-				Collection<Double> coll = new ArrayList<Double>();
-				for (Date i : user.getBadLogins()) {
-					coll.add(i.getTime() * 0.001);
+					// mapper.storeLoginAttempts(user);
+					Collection<Double> coll = new ArrayList<Double>();
+					for (Date i : user.getBadLogins()) {
+						coll.add(i.getTime() * 0.001);
+					}
+					mapper.storeLoginAttemptsWithMilliseconds(user.getUserid(), coll);
 				}
-				mapper.storeLoginAttemptsWithMilliseconds(user.getUserid(), coll);
 			}
 			session.commit();
 		} catch (UserNotFoundException e) {
@@ -335,16 +338,26 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 
 	@Override
 	public void updateDevice(DeviceData device, UserData user)
-			throws DeviceNotFoundException, OperationExecutionErrorException {
+			throws DeviceNotFoundException, UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
 			UserAndDeviceMapper mapper = session.getMapper(UserAndDeviceMapper.class);
+
+			if (mapper.getUserBaseData(user.getUserid()) == null) {
+				throw new UserNotFoundException("User not found with id: " + user.getUserid());
+			}
+
 			int updated = mapper.updateDevice(device, user);
 			if (updated == 0) {
 				throw new DeviceNotFoundException();
 			}
 			session.commit();
 		} catch (Exception e) {
+			if (e instanceof UserNotFoundException) {
+				logger.error("User not found!" + e.getMessage());
+				throw new UserNotFoundException(e);
+			}
+
 			if (e instanceof DeviceNotFoundException) {
 				String deviceid = "NULL";
 				if (device != null) {
@@ -363,16 +376,26 @@ public class MySqlAndMybatisUserAndDeviceDAOImplementation implements UserAndDev
 
 	@Override
 	public void deleteDevice(DeviceData device, UserData user)
-			throws DeviceNotFoundException, OperationExecutionErrorException {
+			throws DeviceNotFoundException, UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
 			UserAndDeviceMapper mapper = session.getMapper(UserAndDeviceMapper.class);
+
+			if (mapper.getUserBaseData(user.getUserid()) == null) {
+				throw new UserNotFoundException("User not found with id: " + user.getUserid());
+			}
+
 			int deleted = mapper.deleteDevice(device, user);
 			if (deleted == 0) {
 				throw new DeviceNotFoundException();
 			}
 			session.commit();
 		} catch (Exception e) {
+			if (e instanceof UserNotFoundException) {
+				logger.error("User not found!" + e.getMessage());
+				throw new UserNotFoundException(e);
+			}
+
 			if (e instanceof DeviceNotFoundException) {
 				String deviceid = "NULL";
 				if (device != null) {

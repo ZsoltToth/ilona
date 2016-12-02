@@ -6,6 +6,7 @@ import java.util.Date;
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
 import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
+import uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.OperationExecutionErrorException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.PositionAlreadyExistsException;
 import uni.miskolc.ips.ilona.tracking.persist.exception.PositionNotFoundException;
@@ -23,9 +24,11 @@ public interface TrackingDAO {
 	 *             The current position is already exists. {@link Position}
 	 * @throws OperationExecutionErrorException
 	 *             General system error.
+	 * @throws DeviceNotFoundException
+	 *             If the current device is not found in the system.
 	 */
 	void storePosition(DeviceData device, Position position)
-			throws PositionAlreadyExistsException, OperationExecutionErrorException;
+			throws DeviceNotFoundException, PositionAlreadyExistsException, OperationExecutionErrorException;
 
 	/**
 	 * Load the positions for the selected device in the specified interval.
@@ -41,7 +44,7 @@ public interface TrackingDAO {
 	 *             General error.
 	 */
 	Collection<TrackPosition> restorePositionsInterval(DeviceData device, Date from, Date to)
-			throws OperationExecutionErrorException;
+			throws DeviceNotFoundException, OperationExecutionErrorException;
 
 	/**
 	 * Load the selected position.

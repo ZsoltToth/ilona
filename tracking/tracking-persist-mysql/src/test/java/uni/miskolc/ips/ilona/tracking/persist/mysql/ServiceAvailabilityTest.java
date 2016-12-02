@@ -5,7 +5,7 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ServiceAvilabilityTest {
+public class ServiceAvailabilityTest {
 
 	@Test
 	public void configFilAvailable() {

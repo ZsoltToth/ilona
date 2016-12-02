@@ -312,6 +312,29 @@ public class UserAndDeviceTest {
 	}
 
 	@Test
+	public void testStoreDeviceUserNotFound() {
+		try {
+			UserAndDeviceService service = new UserAndDeviceServiceImpl();
+			UserData user = EasyMock.createMock(UserData.class);
+			EasyMock.expect(user.getUserid()).andReturn("user").anyTimes();
+			DeviceData device = EasyMock.createMock(DeviceData.class);
+			EasyMock.expect(device.getDeviceid()).andReturn("device").anyTimes();
+			EasyMock.replay(user, device);
+			UserAndDeviceDAO dao = EasyMock.createMock(UserAndDeviceDAO.class);
+			dao.storeDevice(device, user);
+			EasyMock.expectLastCall().andThrow(new UserNotFoundException());
+			EasyMock.replay(dao);
+			((UserAndDeviceServiceImpl) service).setUserDeviceDAO(dao);
+			service.storeDevice(device, user);
+		} catch (uni.miskolc.ips.ilona.tracking.service.exceptions.UserNotFoundException e) {
+			return;
+		} catch (Exception e) {
+			Assert.fail("Error: " + e.getMessage());
+		}
+		Assert.fail("No DuplicatedDeviceException!");
+	}
+
+	@Test
 	public void testStoreDeviceDuplacatedDevice() {
 		try {
 			UserAndDeviceService service = new UserAndDeviceServiceImpl();
@@ -498,14 +521,14 @@ public class UserAndDeviceTest {
 			EasyMock.replay(dao);
 			((UserAndDeviceServiceImpl) service).setUserDeviceDAO(dao);
 			service.updateDevice(device, user);
-		} catch(uni.miskolc.ips.ilona.tracking.service.exceptions.DeviceNotFoundException e) {
+		} catch (uni.miskolc.ips.ilona.tracking.service.exceptions.DeviceNotFoundException e) {
 			return;
 		} catch (Exception e) {
 			Assert.fail("Error: " + e.getMessage());
 		}
 		Assert.fail("No DeviceNotFoundException!");
 	}
-	
+
 	@Test
 	public void testUpdateDeviceGeneralError() {
 		try {
@@ -521,14 +544,14 @@ public class UserAndDeviceTest {
 			EasyMock.replay(dao);
 			((UserAndDeviceServiceImpl) service).setUserDeviceDAO(dao);
 			service.updateDevice(device, user);
-		} catch(ServiceGeneralErrorException e) {
+		} catch (ServiceGeneralErrorException e) {
 			return;
 		} catch (Exception e) {
 			Assert.fail("Error: " + e.getMessage());
 		}
 		Assert.fail("No DeviceNotFoundException!");
 	}
-	
+
 	@Test
 	public void testDeleteDevice() {
 		try {
@@ -543,10 +566,34 @@ public class UserAndDeviceTest {
 			EasyMock.expectLastCall().andVoid();
 			EasyMock.replay(dao);
 			((UserAndDeviceServiceImpl) service).setUserDeviceDAO(dao);
-			service.deleteDevice(device, user);;
+			service.deleteDevice(device, user);
+			;
 		} catch (Exception e) {
 			Assert.fail("Error: " + e.getMessage());
 		}
+	}
+
+	@Test
+	public void testDeleteDeviceUserNotFound() {
+		try {
+			UserAndDeviceService service = new UserAndDeviceServiceImpl();
+			UserData user = EasyMock.createMock(UserData.class);
+			EasyMock.expect(user.getUserid()).andReturn("user").anyTimes();
+			DeviceData device = EasyMock.createMock(DeviceData.class);
+			EasyMock.expect(device.getDeviceid()).andReturn("device").anyTimes();
+			EasyMock.replay(user, device);
+			UserAndDeviceDAO dao = EasyMock.createMock(UserAndDeviceDAO.class);
+			dao.deleteDevice(device, user);
+			EasyMock.expectLastCall().andThrow(new UserNotFoundException());
+			EasyMock.replay(dao);
+			((UserAndDeviceServiceImpl) service).setUserDeviceDAO(dao);
+			service.deleteDevice(device, user);
+		} catch (uni.miskolc.ips.ilona.tracking.service.exceptions.UserNotFoundException e) {
+			return;
+		} catch (Exception e) {
+			Assert.fail("Error: " + e.getMessage());
+		}
+		Assert.fail("No DeviceNotFoundException!");
 	}
 	
 	@Test
@@ -564,14 +611,14 @@ public class UserAndDeviceTest {
 			EasyMock.replay(dao);
 			((UserAndDeviceServiceImpl) service).setUserDeviceDAO(dao);
 			service.deleteDevice(device, user);
-		} catch(uni.miskolc.ips.ilona.tracking.service.exceptions.DeviceNotFoundException e) {
+		} catch (uni.miskolc.ips.ilona.tracking.service.exceptions.DeviceNotFoundException e) {
 			return;
 		} catch (Exception e) {
 			Assert.fail("Error: " + e.getMessage());
 		}
 		Assert.fail("No DeviceNotFoundException!");
 	}
-	
+
 	@Test
 	public void testDeleteDeviceGeneralError() {
 		try {
@@ -587,7 +634,7 @@ public class UserAndDeviceTest {
 			EasyMock.replay(dao);
 			((UserAndDeviceServiceImpl) service).setUserDeviceDAO(dao);
 			service.deleteDevice(device, user);
-		} catch(ServiceGeneralErrorException e) {
+		} catch (ServiceGeneralErrorException e) {
 			return;
 		} catch (Exception e) {
 			Assert.fail("Error: " + e.getMessage());

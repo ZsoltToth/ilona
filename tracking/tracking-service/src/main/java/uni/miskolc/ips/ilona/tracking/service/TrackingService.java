@@ -8,6 +8,7 @@ import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.tracking.model.DeviceData;
 import uni.miskolc.ips.ilona.tracking.model.TrackPosition;
+import uni.miskolc.ips.ilona.tracking.service.exceptions.DeviceNotFoundException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.DuplicatedPositionException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.InvalidMeasurementException;
 import uni.miskolc.ips.ilona.tracking.service.exceptions.ServiceGeneralErrorException;
@@ -46,7 +47,7 @@ public interface TrackingService {
 	 * @throws ServiceGeneralErrorException
 	 */
 	void storePosition(DeviceData device, Position position)
-			throws DuplicatedPositionException, ServiceGeneralErrorException;
+			throws DeviceNotFoundException, DuplicatedPositionException, ServiceGeneralErrorException;
 
 	/**
 	 * Get the positions to the given device.
@@ -61,7 +62,8 @@ public interface TrackingService {
 	 * @throws ServiceGeneralErrorException
 	 *             General system error.
 	 */
-	Collection<TrackPosition> getPositions(DeviceData device, Date from, Date to) throws ServiceGeneralErrorException;
+	Collection<TrackPosition> getPositions(DeviceData device, Date from, Date to)
+			throws DeviceNotFoundException, ServiceGeneralErrorException;
 
 	/**
 	 * 

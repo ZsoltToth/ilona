@@ -151,6 +151,13 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 
 		try {
 			userDeviceDAO.storeDevice(device, user);
+		} catch (uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException e) {
+			String userid = "NULL";
+			if (user != null) {
+				userid = user.getUserid();
+			}
+			logger.error("user not found! Id: " + userid);
+			throw new UserNotFoundException("User not found! Id: " + userid, e);
 		} catch (DeviceAlreadyExistsException e) {
 			String deviceid = "NULL";
 			if (device != null) {
@@ -180,9 +187,16 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 
 	@Override
 	public DeviceData readDevice(String deviceid, UserData user)
-			throws DeviceNotFoundException, ServiceGeneralErrorException {
+			throws UserNotFoundException, DeviceNotFoundException, ServiceGeneralErrorException {
 		try {
 			return userDeviceDAO.readDevice(deviceid, user);
+		} catch (uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException e) {
+			String userid = "NULL";
+			if (user != null) {
+				userid = user.getUserid();
+			}
+			logger.error("user not found! Id: " + userid);
+			throw new UserNotFoundException("User not found! Id: " + userid, e);
 		} catch (Exception e) {
 			if (e instanceof uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException) {
 				throw new DeviceNotFoundException("Device not found with id: " + deviceid, e);
@@ -198,6 +212,13 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 		Collection<DeviceData> devices = null;
 		try {
 			devices = userDeviceDAO.readUserDevices(user);
+		} catch (uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException e) {
+			String userid = "NULL";
+			if (user != null) {
+				userid = user.getUserid();
+			}
+			logger.error("user not found! Id: " + userid);
+			throw new UserNotFoundException("User not found! Id: " + userid, e);
 		} catch (Exception e) {
 			String userid = "NULL";
 			if (user != null) {
@@ -245,6 +266,13 @@ public class UserAndDeviceServiceImpl implements UserAndDeviceService {
 			throws DeviceNotFoundException, UserNotFoundException, ServiceGeneralErrorException {
 		try {
 			userDeviceDAO.deleteDevice(device, user);
+		} catch (uni.miskolc.ips.ilona.tracking.persist.exception.UserNotFoundException e) {
+			String userid = "NULL";
+			if (user != null) {
+				userid = user.getUserid();
+			}
+			logger.error("user not found! Id: " + userid);
+			throw new UserNotFoundException("User not found! Id: " + userid, e);
 		} catch (uni.miskolc.ips.ilona.tracking.persist.exception.DeviceNotFoundException e) {
 			String deviceid = "NULL";
 			if (device != null) {

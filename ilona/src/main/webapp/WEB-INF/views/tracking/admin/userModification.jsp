@@ -699,10 +699,10 @@
 				
 				<div id="adminUserModPasswordResetResultDIV"></div>
 				
-				<p><b>Account expiration details:</b></p>
+				<p><b>Password expiration details:</b></p>
 				<div id="adminUserModPasswordExpirationDIV"></div>
 				
-				Account valid until:
+				Password valid until:
 				<p id="adminUserManPasswordValidUntilParagh"></p>
 				<br />
 				<input type="button" value="Reset password expiration!" id="adminUserModResetPasswordExpirationBTN">			

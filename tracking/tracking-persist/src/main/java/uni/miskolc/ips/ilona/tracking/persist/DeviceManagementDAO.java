@@ -73,7 +73,7 @@ public interface DeviceManagementDAO {
 	 *             General error.
 	 */
 	void updateDevice(DeviceData device, UserData user)
-			throws DeviceNotFoundException, OperationExecutionErrorException;
+			throws DeviceNotFoundException, UserNotFoundException, OperationExecutionErrorException;
 
 	/**
 	 * Deletes the current device.
@@ -88,6 +88,6 @@ public interface DeviceManagementDAO {
 	 *             General error.
 	 */
 	void deleteDevice(DeviceData device, UserData user)
-			throws DeviceNotFoundException, OperationExecutionErrorException;
+			throws DeviceNotFoundException, UserNotFoundException, OperationExecutionErrorException;
 
 }

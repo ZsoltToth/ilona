@@ -48,7 +48,8 @@ public interface DeviceService {
 	 * @throws ServiceGeneralErrorException
 	 *             General service error in the subsystem.
 	 */
-	DeviceData readDevice(String deviceid, UserData user) throws DeviceNotFoundException, ServiceGeneralErrorException;
+	DeviceData readDevice(String deviceid, UserData user)
+			throws UserNotFoundException, DeviceNotFoundException, ServiceGeneralErrorException;
 
 	/**
 	 * Load the available devices of the given user.
