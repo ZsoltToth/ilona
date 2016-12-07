@@ -95,7 +95,7 @@ public interface SecurityFunctionsDAO {
 	 * @throws OperationExecutionErrorException
 	 *             General system error.
 	 */
-	public Collection<Date> loadBadLogins(String userid) throws OperationExecutionErrorException;
+	public Collection<Date> loadBadLogins(String userid) throws UserNotFoundException, OperationExecutionErrorException;
 
 	/**
 	 * Update the current bad logins list.<br/>

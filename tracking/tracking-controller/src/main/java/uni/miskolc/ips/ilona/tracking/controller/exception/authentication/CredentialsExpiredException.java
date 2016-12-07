@@ -4,6 +4,8 @@ import org.springframework.security.core.AuthenticationException;
 
 public class CredentialsExpiredException extends AuthenticationException {
 
+	private String userid;
+
 	/**
 	 * 
 	 */
@@ -11,11 +13,24 @@ public class CredentialsExpiredException extends AuthenticationException {
 
 	public CredentialsExpiredException(String msg) {
 		super(msg);
-		// TODO Auto-generated constructor stub
+	}
+
+	public CredentialsExpiredException(String msg, String userid) {
+		super(msg);
+		this.userid = userid;
 	}
 
 	public CredentialsExpiredException(String msg, Throwable error) {
 		super(msg, error);
+	}
+
+	public CredentialsExpiredException(String msg, String userid, Throwable error) {
+		super(msg, error);
+		this.userid = userid;
+	}
+
+	public String getUserid() {
+		return userid;
 	}
 
 }

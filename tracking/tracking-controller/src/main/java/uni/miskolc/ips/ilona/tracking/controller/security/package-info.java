@@ -1,7 +1,4 @@
 /**
- * 
- */
-/**
  * @author Patrik / A5USL0
  *
  */

@@ -42,6 +42,12 @@ public class TrackingModuleCentralManager {
 
 	/**
 	 * Tracking module utility property.<br />
+	 * Five seconds in milliseconds.
+	 */
+	public static final long fiveMinutesInMilliseconds = 300000L;
+
+	/**
+	 * Tracking module utility property.<br />
 	 * One day in milliseconds with type long.
 	 */
 	public static final long oneDayInMiliseconds = 86_400_000L;
@@ -83,6 +89,8 @@ public class TrackingModuleCentralManager {
 	private Object lockedTimeAfterBadLoginsLock = new Object();
 
 	private Object passwordRecoveryTokenValidityTimeLock = new Object();
+
+	private Object lockedCheckIntervalLock = new Object();
 
 	/*
 	 * ACCOUNT CHECK RESTRICTIONS
@@ -131,6 +139,8 @@ public class TrackingModuleCentralManager {
 	 * value.
 	 */
 	private boolean lockedCheckEnabled = true;
+
+	private long lockedCheckInterval = fiveMinutesInMilliseconds;
 
 	/**
 	 * The lock period after to many bad logins.
@@ -426,6 +436,34 @@ public class TrackingModuleCentralManager {
 			}
 			this.lockedTimeAfterBadLogins = lockedTimeAfterBadLogins;
 		}
+	}
+
+	/**
+	 * The system will check the bad logins after this pattern: <br/>
+	 * timeNow - this value > current value. If this expression is true, then
+	 * the system will count that bad login.
+	 * 
+	 * @return
+	 */
+	public long getLockedCheckInterval() {
+		synchronized (lockedCheckIntervalLock) {
+			return lockedCheckInterval;
+		}
+
+	}
+
+	/**
+	 * The system will check the bad logins after this pattern: <br/>
+	 * timeNow - this value > current value. If this expression is true, then
+	 * the system will count that bad login.
+	 * 
+	 * @param lockedCheckInterval
+	 */
+	public void setLockedCheckInterval(long lockedCheckInterval) {
+		synchronized (lockedCheckIntervalLock) {
+			this.lockedCheckInterval = lockedCheckInterval;
+		}
+
 	}
 
 }

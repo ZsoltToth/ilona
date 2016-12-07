@@ -37,4 +37,6 @@ public interface SecurityFunctionsUserMapper {
 			@Param(value = "validuntil") double validUntil);
 
 	PasswordRecoveryTokenMapper readPasswordToken(@Param(value = "userid") String userid);
+	
+	int checkUserAvailability(@Param(value = "userid") String userid);
 }

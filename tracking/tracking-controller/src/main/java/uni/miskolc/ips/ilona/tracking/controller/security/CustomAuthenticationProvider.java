@@ -1,12 +1,12 @@
 package uni.miskolc.ips.ilona.tracking.controller.security;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.AccountExpiredException;
 import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.AccountIsNotEnabledException;
 import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.AccountLockedException;
-import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.CredentialsExpiredException;
 import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.InvalidUsernamePasswordException;
 import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.ServiceErrorException;
 import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.UserNotFoundException;
@@ -124,37 +123,48 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 				}
 			}
 
-			if (user.getBadLogins().size() > centralManager.getBadLoginsUpperBound()) {
-				// user.setBadLogins(new ArrayList<Date>());
-				// user.setNonLocked(false);
-				Date lockUntil = new Date(System.currentTimeMillis() + centralManager.getLockedTimeAfterBadLogins());
-				// user.setLockedUntil(lockUntil);
-				// securityDAO.eraseBadLogins(userid);
-				try {
-					securityDAO.updateLockedAndUntilLocked(userid, false, lockUntil, true);
-				} catch (Exception e) {
-					logger.error("Error: " + e.getMessage());
-					throw new ServiceErrorException("Service error!");
+			Collection<Date> filteredBadLogins = new ArrayList();
+			Collection<Date> badLogins = user.getBadLogins();
+			// long checkInterval = centralManager.getLockedCheckInterval();
+			long checkValue = System.currentTimeMillis() - centralManager.getLockedCheckInterval();
+			if (badLogins != null) {
+				for (Date badLogin : badLogins) {
+					if (badLogin.getTime() > checkValue) {
+						filteredBadLogins.add(badLogin);
+					}
 				}
-				throw new AccountLockedException("Account locked", lockUntil.getTime());
+
+				if (filteredBadLogins.size() > centralManager.getBadLoginsUpperBound()) {
+					Date lockUntil = new Date(
+							System.currentTimeMillis() + centralManager.getLockedTimeAfterBadLogins());
+					try {
+						securityDAO.updateLockedAndUntilLocked(userid, false, lockUntil, true);
+					} catch (Exception e) {
+						logger.error("Error: " + e.getMessage());
+						throw new ServiceErrorException("Service error!");
+					}
+					throw new AccountLockedException("Account locked", lockUntil.getTime());
+				}
 			}
 		}
 
-		if (System.currentTimeMillis()  > user.getCredentialNonExpiredUntil().getTime()) {
-			String newPassword = passwordGenerator.generatePassword(8);
-			String hashedPassword = passwordEncoder.encode(newPassword);
-			try {
-
-				securityDAO.updatePassword(userid, hashedPassword,
-						new Date(System.currentTimeMillis() + centralManager.getCredentialsValidityPeriod()));
-
-				passwordSender.sendNewPassword(userid, newPassword, user.getEmail());
-			} catch (Exception e) {
-				logger.error("Error: " + e.getMessage());
-				throw new ServiceErrorException("Service error!");
-			}
-			throw new CredentialsExpiredException("Password expired!");
-		}
+		//if (System.currentTimeMillis() > user.getCredentialNonExpiredUntil().getTime()) {
+			/*
+			 * String newPassword = passwordGenerator.generatePassword(8);
+			 * String hashedPassword = passwordEncoder.encode(newPassword); try
+			 * {
+			 * 
+			 * securityDAO.updatePassword(userid, hashedPassword, new
+			 * Date(System.currentTimeMillis() +
+			 * centralManager.getCredentialsValidityPeriod()));
+			 * 
+			 * passwordSender.sendNewPassword(userid, newPassword,
+			 * user.getEmail()); } catch (Exception e) { logger.error("Error: "
+			 * + e.getMessage()); throw new
+			 * ServiceErrorException("Service error!"); }
+			 */
+			//throw new CredentialsExpiredException("Password expired!", userid);
+		//}
 
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			user.getBadLogins().add(new Date());
@@ -168,6 +178,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		}
 		try {
 			securityDAO.updateAccountExpiration(userid, new Date());
+			securityDAO.eraseBadLogins(userid);
 		} catch (Exception e) {
 			logger.error("Error: " + e.getMessage());
 			throw new ServiceErrorException("Service error!");

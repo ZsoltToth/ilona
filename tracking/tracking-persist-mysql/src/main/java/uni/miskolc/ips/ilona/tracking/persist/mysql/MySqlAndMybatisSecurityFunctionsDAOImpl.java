@@ -12,6 +12,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.core.userdetails.User;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
@@ -152,6 +153,9 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 			if (updated == 0) {
 				throw new UserNotFoundException("User not found!");
 			}
+			if (roles == null || roles.size() == 0) {
+				return;
+			}
 			updated = mapper.insertRoles(userid, roles);
 			// throw integrity Constraint?!
 			if (updated == 0) {
@@ -177,9 +181,16 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 		int affectedRows = 0;
 		try {
 			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
+			if (mapper.checkUserAvailability(userid) == 0) {
+				throw new UserNotFoundException("User not found with id: " + userid);
+			}
 			affectedRows = mapper.eraseBadLogins(userid);
 			session.commit();
 		} catch (Exception e) {
+			if (e instanceof UserNotFoundException) {
+				logger.error("Error: " + e.getMessage());
+				throw new UserNotFoundException(e);
+			}
 			logger.error("Error: " + e.getMessage());
 			throw new OperationExecutionErrorException("Error: " + e.getMessage());
 		} finally {
@@ -189,10 +200,16 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 	}
 
 	@Override
-	public Collection<Date> loadBadLogins(String userid) throws OperationExecutionErrorException {
+	public Collection<Date> loadBadLogins(String userid)
+			throws UserNotFoundException, OperationExecutionErrorException {
 		SqlSession session = sessionFactory.openSession();
 		try {
 			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
+
+			if (mapper.checkUserAvailability(userid) == 0) {
+				throw new UserNotFoundException("Not found with id: " + userid);
+			}
+
 			Collection<Long> dateMapper = mapper.getBadLogins(userid);
 			if (dateMapper == null) {
 				return new ArrayList<Date>();
@@ -203,6 +220,10 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 			}
 			return badLogins;
 		} catch (Exception e) {
+			if (e instanceof UserNotFoundException) {
+				logger.error("Error: " + e.getMessage());
+				throw new UserNotFoundException(e);
+			}
 			logger.error("Error: " + e.getMessage());
 			throw new OperationExecutionErrorException("Service error!", e);
 		} finally {
@@ -216,8 +237,13 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 		SqlSession session = sessionFactory.openSession();
 		try {
 			SecurityFunctionsUserMapper mapper = session.getMapper(SecurityFunctionsUserMapper.class);
+
+			if (mapper.checkUserAvailability(userid) == 0) {
+				throw new UserNotFoundException("User not found with id: " + userid);
+			}
+
 			mapper.eraseBadLogins(userid);
-			if (badLogins != null && badLogins.size() != 0) {
+			if (!(badLogins == null || badLogins.size() == 0)) {
 				Collection<Double> millisecondsDate = new ArrayList<Double>();
 				for (Date date : badLogins) {
 					millisecondsDate.add(date.getTime() * 0.001);
@@ -226,9 +252,9 @@ public class MySqlAndMybatisSecurityFunctionsDAOImpl implements SecurityFunction
 			}
 			session.commit();
 		} catch (Exception e) {
-			if (e.getCause() instanceof MySQLIntegrityConstraintViolationException) {
-				logger.error("User has not found with id: " + userid + "  Error: " + e.getMessage());
-				throw new UserNotFoundException("User has not found with id: " + userid + "  Error: " + e.getMessage());
+			if (e instanceof UserNotFoundException) {
+				logger.error("Error: " + e.getMessage());
+				throw new UserNotFoundException(e);
 			}
 			logger.error("Error: " + e.getMessage());
 			throw new OperationExecutionErrorException("Error: " + e.getMessage());

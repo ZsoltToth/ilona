@@ -14,36 +14,9 @@
 	<name>tracking-util</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<junit.version>4.12</junit.version>
-		<log4j.version>2.5</log4j.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 	</properties>
-	<dependencies>
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
 
-		<!-- Logging dependencies -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-iostreams</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<pluginManagement>

@@ -15,32 +15,14 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<junit.version>4.12</junit.version>
 		<mybatis.version>3.4.1</mybatis.version>
 		<mysql.connector.version>5.1.6</mysql.connector.version>
 		<tracking.persist.version>0.0.1-SNAPSHOT</tracking.persist.version>
 		<spring.version>4.3.1.RELEASE</spring.version>
 		<spring.security.version>4.1.1.RELEASE</spring.security.version>
-		<log4j.version>2.5</log4j.version>
-		<easymock.version>3.4</easymock.version>
 	</properties>
+	
 	<dependencies>
-
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>${easymock.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- Database dependencies -->
 		<dependency>
 			<groupId>org.mybatis</groupId>
@@ -58,18 +40,6 @@
 			<groupId>uni.miskolc.ips.ilona</groupId>
 			<artifactId>tracking-persist</artifactId>
 			<version>${tracking.persist.version}</version>
-		</dependency>
-
-		<!-- Logging dependencies -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
 		</dependency>
 
 		<!-- Spring dependencies -->

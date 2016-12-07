@@ -46,9 +46,10 @@
 		<intercept-url pattern="/tracking/registeruser" access="permitAll"/>
 		<intercept-url pattern="/tracking/passwordreset" access="permitAll"/>
 		<intercept-url pattern="/tracking/resetpassword" access="permitAll"/>
-		<intercept-url pattern="/tracking/passwordrequestwithtoken" access="permitAll"/>
+		<intercept-url pattern="/tracking/passwordrequestwithtoken" access="permitAll"/>	
+		
 		 <!-- ######################################################################### -->
-		 
+		<intercept-url pattern="/tracking/expiredpasswordchange" access="hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')"/>
 		<intercept-url pattern="/tracking/admin/**" access="hasRole('ROLE_ADMIN')"/>
 		<intercept-url pattern="/tracking/user/**" access="hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')"/>
 		

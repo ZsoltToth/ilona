@@ -31,6 +31,8 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 	public final static int RES_CREDENTIALS_EXPIRED = 500;
 	public final static int RES_SERVICE_ERROR = 600;
 
+	public final static String USERID = "AuthFaild_Userid";
+
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException ex) throws IOException, ServletException {

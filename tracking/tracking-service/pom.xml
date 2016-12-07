@@ -15,18 +15,10 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<junit.version>4.12</junit.version>
 		<tracking.model.version>0.0.1-SNAPSHOT</tracking.model.version>
 		<tracking.measurement.version>0.1.1-SNAPSHOT</tracking.measurement.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- Ilona module dependencies -->
 		<dependency>
 			<groupId>uni.miskolc.ips.ilona</groupId>

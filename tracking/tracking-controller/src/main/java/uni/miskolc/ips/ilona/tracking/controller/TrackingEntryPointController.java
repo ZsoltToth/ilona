@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,10 +25,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import uni.miskolc.ips.ilona.tracking.controller.exception.PasswordRecoveryTokenValidityErrorException;
+import uni.miskolc.ips.ilona.tracking.controller.exception.PasswordResetServiceErrorException;
 import uni.miskolc.ips.ilona.tracking.controller.exception.TrackingServiceErrorException;
+import uni.miskolc.ips.ilona.tracking.controller.exception.authentication.CredentialsExpiredException;
 import uni.miskolc.ips.ilona.tracking.controller.model.ExecutionResultDTO;
+import uni.miskolc.ips.ilona.tracking.controller.model.ExpiredPasswordChangeDTO;
 import uni.miskolc.ips.ilona.tracking.controller.model.UserCreationDTO;
+import uni.miskolc.ips.ilona.tracking.controller.model.UserSecurityDetails;
 import uni.miskolc.ips.ilona.tracking.controller.passwordrecovery.PasswordRecoveryManager;
+import uni.miskolc.ips.ilona.tracking.controller.security.CustomAuthenticationFailureHandler;
 import uni.miskolc.ips.ilona.tracking.controller.util.ValidateUserData;
 import uni.miskolc.ips.ilona.tracking.controller.util.ValidityStatusHolder;
 import uni.miskolc.ips.ilona.tracking.controller.util.WebpageInformationProvider;
@@ -130,10 +136,12 @@ public class TrackingEntryPointController {
 		/**
 		 * Chech for admin rights
 		 */
+		boolean isAdmin = false;
 		for (GrantedAuthority auth : authentication.getAuthorities()) {
 			if (auth.getAuthority().equals("ROLE_ADMIN")) {
 				logger.info("Admin page authentication request!" + authentication.getName());
-				return new ModelAndView("tracking/admin/mainpage");
+				// return new ModelAndView("tracking/admin/mainpage");
+				isAdmin = true;
 			}
 		}
 
@@ -143,14 +151,28 @@ public class TrackingEntryPointController {
 		for (GrantedAuthority auth : authentication.getAuthorities()) {
 			if (auth.getAuthority().equals("ROLE_USER")) {
 				logger.info("User page authentication request!" + authentication.getName());
-				return new ModelAndView("tracking/user/userMainpage");
+				// return new ModelAndView("tracking/user/userMainpage");
 			}
 		}
 
+		UserSecurityDetails userDetails = (UserSecurityDetails) authentication.getPrincipal();
+
+		if (System.currentTimeMillis() > userDetails.getCredentialNonExpiredUntil().getTime()) {
+			ModelAndView mav = new ModelAndView("tracking/passwordReset");
+			mav.addObject("passwordRestriction", WebpageInformationProvider.getPasswordRestrictionMessage());
+			mav.addObject("userid", userDetails.getUserid());
+			return mav;
+		}
+
+		if (isAdmin == true) {
+			return new ModelAndView("tracking/admin/mainpage");
+		} else {
+			return new ModelAndView("tracking/user/userMainpage");
+		}
 		/**
 		 * Other role?
 		 */
-		return new ModelAndView("tracking/mainpageHome");
+		// return new ModelAndView("tracking/mainpageHome");
 	}
 
 	/**
@@ -180,7 +202,7 @@ public class TrackingEntryPointController {
 	/**
 	 * 
 	 * @param error
-	 *            
+	 * 
 	 * @return
 	 */
 	@RequestMapping(value = "/getloginpage", method = { RequestMethod.POST, RequestMethod.GET })
@@ -369,6 +391,87 @@ public class TrackingEntryPointController {
 		}
 		result.addMessage("The new password has been sent!");
 		return result;
+	}
+
+	/**
+	 * 
+	 * @return {@link ExecutionResultDTO}<br>
+	 *         <ul>
+	 *         <li>100: OK</li>
+	 *         <li>200: The given password doenst match the old password!</li>
+	 *         <li>300: Password format is invalid!</li>
+	 *         <li>400: Service error!</li>
+	 *         <li>600: The new password arent equals!</li>
+	 *         </ul>
+	 */
+	@RequestMapping(value = "/expiredpasswordchange", method = { RequestMethod.POST })
+	public ModelAndView generatePasswordChangePageHandler(@ModelAttribute() ExpiredPasswordChangeDTO password)
+			throws PasswordResetServiceErrorException {
+
+		UserSecurityDetails user = (UserSecurityDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		String actualPassword = password.getOldPassword();
+		if (actualPassword == null || actualPassword.equals("")) {
+			throw new PasswordResetServiceErrorException("Error!", 200);
+		}
+
+		if (!passwordEncoder.matches(actualPassword, user.getPassword())) {
+			throw new PasswordResetServiceErrorException("Error!", 200);
+		}
+
+		String newPassword1 = password.getNewPassword1();
+		String newPassword2 = password.getNewPassword2();
+
+		ValidityStatusHolder valid = ValidateUserData.validateRawPassword(newPassword1);
+		if (!valid.isValid()) {
+			throw new PasswordResetServiceErrorException("Error!", 300);
+		}
+
+		if (!newPassword1.equals(newPassword2)) {
+			throw new PasswordResetServiceErrorException("Error!", 600);
+		}
+
+		String hashedPassword = passwordEncoder.encode(newPassword1);
+		Date credentialsValidity;
+		try {
+			UserData userDetail = userDeviceService.getUser(user.getUserid());
+			userDetail.setPassword(hashedPassword);
+			credentialsValidity = new Date(new Date().getTime() + this.centralManager.getCredentialsValidityPeriod());
+			userDetail.setCredentialNonExpiredUntil(credentialsValidity);
+			userDeviceService.updateUser(userDetail);
+		} catch (Exception e) {
+			throw new PasswordResetServiceErrorException("Error!", 400);
+		}
+		user.setPassword(hashedPassword);
+		user.setCredentialNonExpiredUntil(credentialsValidity);
+		return new ModelAndView("forward:/tracking/maincontentdecision");
+	}
+
+	@ExceptionHandler(PasswordResetServiceErrorException.class)
+	@ResponseBody
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	public ExecutionResultDTO handlePasswordResetErrors(PasswordResetServiceErrorException ex) {
+		int code = ex.getErrorCode();
+		System.out.println("aaa" + code);
+		ExecutionResultDTO result = new ExecutionResultDTO();
+		switch (code) {
+		case 200:
+			result.setResponseState(200);
+			result.addMessage("The old password doesnt match!");
+			return result;
+		case 300:
+			result.setResponseState(300);
+			result.addMessage("The password format is invalid!");
+			return result;
+		case 600:
+			result.setResponseState(600);
+			result.addMessage("The new password and the check password are not equal!");
+			return result;
+		default:
+			result.setResponseState(400);
+			result.addMessage("Service error!");
+			return result;
+		}
 	}
 
 	@ExceptionHandler(TrackingServiceErrorException.class)

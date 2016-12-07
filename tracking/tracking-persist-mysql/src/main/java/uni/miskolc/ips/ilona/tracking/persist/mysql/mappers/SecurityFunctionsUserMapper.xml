@@ -25,6 +25,11 @@
 		trackingloginattempts where userid = #{userid};
 	</select>
 
+	<select id="checkUserAvailability" resultType="int">
+		select count(userid) from TrackingUsers where userid
+		= #{userid};
+	</select>
+
 	<insert id="insertRoles">
 		insert into TrackingUserRoles(userid, userrole) values
 		<foreach collection="roles" item="role" separator=",">
@@ -50,7 +55,8 @@
 	</insert>
 
 	<update id="updatePassword">
-		update TrackingUsers set password = #{password}, credentialsvaliduntil = #{valid} where
+		update TrackingUsers set password = #{password},
+		credentialsvaliduntil = #{valid} where
 		userid = #{userid};
 	</update>
 

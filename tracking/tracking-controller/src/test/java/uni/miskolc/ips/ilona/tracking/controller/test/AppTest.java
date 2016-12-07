@@ -1,4 +1,4 @@
-package uni.miskolc.ips.ilona.tracking.controller;
+package uni.miskolc.ips.ilona.tracking.controller.test;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
