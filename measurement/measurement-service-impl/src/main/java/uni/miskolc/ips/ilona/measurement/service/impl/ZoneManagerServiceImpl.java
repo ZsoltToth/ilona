@@ -1,12 +1,15 @@
 package uni.miskolc.ips.ilona.measurement.service.impl;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 import uni.miskolc.ips.ilona.measurement.persist.ZoneDAO;
 import uni.miskolc.ips.ilona.measurement.persist.exceptions.InsertionException;
 import uni.miskolc.ips.ilona.measurement.persist.exceptions.RecordNotFoundException;
 import uni.miskolc.ips.ilona.measurement.service.ZoneService;
+import uni.miskolc.ips.ilona.measurement.service.exception.DatabaseUnavailableException;
+import uni.miskolc.ips.ilona.measurement.service.exception.ZoneNotFoundException;
 
 /**
  * The PositionManagerServiceImpl class is used to Manage Zones.
@@ -80,6 +83,18 @@ public class ZoneManagerServiceImpl implements ZoneService {
 			e.printStackTrace();
 		}
 
+	}
+
+
+	@Override
+	public Zone getZone(UUID value) throws DatabaseUnavailableException, ZoneNotFoundException {
+		Zone result;
+		try{
+			result = zoneDAO.readZone(value);
+		}catch(RecordNotFoundException e){
+			result = Zone.UNKNOWN_POSITION;
+		}
+		return result;
 	}
 
 }

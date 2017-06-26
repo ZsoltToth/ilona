@@ -5,11 +5,11 @@
   <parent>
     <groupId>uni.miskolc.ips.ilona</groupId>
     <artifactId>positioning</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
   </parent>
   <groupId>uni.miskolc.ips.ilona</groupId>
   <artifactId>positioning-service</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.1.2-SNAPSHOT</version>
   <name>positioning-service</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -25,12 +25,12 @@
     <dependency>
     	<groupId>uni.miskolc.ips.ilona</groupId>
     	<artifactId>positioning-model</artifactId>
-    	<version>0.1.1-SNAPSHOT</version>
+    	<version>0.1.2-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>uni.miskolc.ips.ilona</groupId>
     	<artifactId>measurement-persist</artifactId>
-    	<version>0.1.1-SNAPSHOT</version>
+    	<version>0.1.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

@@ -12,6 +12,7 @@ import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 import uni.miskolc.ips.ilona.measurement.service.MeasurementService;
 import uni.miskolc.ips.ilona.measurement.service.PositionService;
+import uni.miskolc.ips.ilona.measurement.service.exception.DatabaseUnavailableException;
 import uni.miskolc.ips.ilona.positioning.service.PositioningService;
 
 /**
@@ -47,10 +48,16 @@ public class NaiveBayesPositioningService implements PositioningService {
 	}
 
 	public Position determinePosition(Measurement measurement) {
-		Collection<Position> positionswithzone = this
-				.positionsWithZone(positionservice.readPositions());
-		Collection<Measurement> measurements = measurementservice
-				.readMeasurements();
+		Collection<Position> positionswithzone = null;
+		Collection<Measurement> measurements;
+		try {
+			positionswithzone = this
+					.positionsWithZone(positionservice.readPositions());
+			measurements = measurementservice
+					.readMeasurements();
+		} catch (DatabaseUnavailableException e) {
+			return new Position(Zone.UNKNOWN_POSITION);
+		}
 		if (positionswithzone.isEmpty()) {
 			return new Position(Zone.UNKNOWN_POSITION);
 		}
@@ -65,7 +72,7 @@ public class NaiveBayesPositioningService implements PositioningService {
 
 			}
 		}
-		LOG.info(String.format("The Location of %s measurement is %s",
+		LOG.info(String.format("The position of %s measurement is %s",
 				measurement, bestFit.getZone()));
 
 		return bestFit;

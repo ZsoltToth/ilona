@@ -16,8 +16,10 @@ insert into Measurement values("43c6270b-2d12-49f3-ac8f-0d09d55fcf61", "2015-07-
 
 insert into WIFIRSSI values("SSID1", -23, "59d46ae9-e0c8-48d0-b14a-503ed414b7cc");
 insert into WIFIRSSI values("SSID2", -30, "4304fe32-8028-4830-bebc-dd1d535e5cfd");
+insert into WIFIRSSI values("SSID4", -30, "4304fe32-8028-4830-bebc-dd1d535e5cfd");
 insert into WIFIRSSI values("SSID3", -10, "43c6270b-2d12-49f3-ac8f-0d09d55fcf61");
 
 insert into BluetoothTags values("B1", "59d46ae9-e0c8-48d0-b14a-503ed414b7cc");
 insert into BluetoothTags values("B2", "4304fe32-8028-4830-bebc-dd1d535e5cfd");
+insert into BluetoothTags values("B4", "4304fe32-8028-4830-bebc-dd1d535e5cfd");
 insert into BluetoothTags values("B3", "43c6270b-2d12-49f3-ac8f-0d09d55fcf61");

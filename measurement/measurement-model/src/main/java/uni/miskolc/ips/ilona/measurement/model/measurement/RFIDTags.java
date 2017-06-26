@@ -18,7 +18,7 @@ public class RFIDTags {
 
 	public RFIDTags(Set<byte[]> tags) {
 		super();
-		this.tags = tags;
+		this.tags = trimTagsSet(tags);
 	}
 
 	public Set<byte[]> getTags() {
@@ -26,15 +26,15 @@ public class RFIDTags {
 	}
 
 	public void setTags(Set<byte[]> tags) {
-		this.tags = tags;
+		this.tags = trimTagsSet(tags);
 	}
 
 	public void addTag(byte[] tag) {
-		this.tags.add(tag);
+		this.tags.add(trimTags(tag));
 	}
 
 	public void removeTag(byte[] tag) {
-		this.tags.remove(tag);
+		this.tags.remove(trimTags(tag));
 	}
 
 	public double distance(RFIDTags other) {
@@ -105,17 +105,48 @@ public class RFIDTags {
 	}
 
 	private boolean contain(Set<byte[]> set, byte[] in) {
-		for (byte[] each : set) {
-			if (Arrays.equals(each, in)) {
+		for (byte[] each : trimTagsSet(set)) {
+			if (Arrays.equals(each, trimTags(in))) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	
+	private byte[] trimTags(byte[] tags){
+		int numOfGoodValues=0;
+		for (byte b : tags) {
+			if(b!=0){
+				numOfGoodValues++;
+			}
+		}
+		byte[] result = new byte[numOfGoodValues];
+		int i = 0;
+		for(byte b:tags) {
+			if(b!=0){
+				result[i]= b;
+				i++;
+			}
+		}
+		return result;
+	
+	}
+	
+	private Set<byte[]> trimTagsSet(Set<byte[]> tags){
+		Set<byte[]> result =  new HashSet<byte[]>();
+		for(byte[] tag:tags){
+			result.add(trimTags(tag));
+		}
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		String result = "RFIDTags =";
+		if(tags==null){
+			return result;
+		}
 		int i = 1, j = 1;
 		for (byte[] each : tags) {
 			j = 1;

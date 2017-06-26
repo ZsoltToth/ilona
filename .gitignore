@@ -19,8 +19,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
-
+*.log
 # Locally stored "Eclipse launch configurations"
 *.launch
 .springBeans
-

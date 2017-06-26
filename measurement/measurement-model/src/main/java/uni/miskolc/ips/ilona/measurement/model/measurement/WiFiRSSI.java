@@ -1,6 +1,7 @@
 package uni.miskolc.ips.ilona.measurement.model.measurement;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +21,7 @@ public class WiFiRSSI {
 		this.rssiValues = rssiValues;
 	}
 
+	
 	public void setRSSI(String ssid, double rssi) {
 		this.rssiValues.put(ssid, rssi);
 	}

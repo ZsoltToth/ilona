@@ -8,27 +8,29 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
-import uni.miskolc.ips.ilona.measurement.model.position.Zone;
-
 public class ZoneMapTest {
-	static UUID zone1;
-	static UUID zone2;
-	static UUID zone3;
-	static UUID zone4;
-	static UUID zone5;
-	static Gateway path1;
-	static Gateway path2;
-	static Gateway path3;
-	static Gateway path4;
-	static Gateway path5;
-	static Gateway path6;
-	static ZoneMap map;
+	//The vertices of the test map
+	private UUID zone1;
+	private UUID zone2;
+	private UUID zone3;
+	private UUID zone4;
+	private UUID zone5;
+	//the edges of the test map
+	private Gateway path1;
+	private Gateway path2;
+	private Gateway path3;
+	private Gateway path4;
+	private Gateway path5;
+	private Gateway path6;
+	//The test map graph
+	private ZoneMap map;
+	private UUID unconnectedZone;
 	
-	@BeforeClass
-	public static void setUp(){
+	@Before
+	public void setUp(){
 		Set<UUID> zones = new HashSet<>();
 		Set<Gateway> paths = new HashSet<>();
 		
@@ -42,6 +44,8 @@ public class ZoneMapTest {
 		zones.add(zone4);
 		zone5 = UUID.randomUUID();
 		zones.add(zone5);
+		unconnectedZone = UUID.randomUUID();
+		zones.add(unconnectedZone);
 		
 		path1= new Gateway(zone1, zone2);
 		paths.add(path1);
@@ -60,7 +64,7 @@ public class ZoneMapTest {
 	}
 	
 	@Test
-	public void testFindPathOnlyOne(){
+	public void testFindPathOnlyOneDestination(){
 		List<UUID> expected = new ArrayList<>();
 		expected.add(zone1);
 		expected.add(zone5);
@@ -68,7 +72,37 @@ public class ZoneMapTest {
 	}
 	
 	@Test
-	public void testFindPathMore(){
+	public void testFindPathSameStartAndDestination(){
+		List<UUID> expected = new ArrayList<>();
+		expected.add(zone1);
+		assertEquals(expected,map.findPath(zone1, zone1));
+	}
+	
+	@Test
+	public void testFindPathMultiplePaths(){
+		List<UUID> expected = new ArrayList<>();
+		expected.add(zone1);
+		expected.add(zone2);
+		expected.add(zone4);
+		assertEquals(expected,map.findPath(zone1, zone4));
+	}
+	
+	@Test
+	public void testFindPathOnlyOnePath(){
+		List<UUID> expected = new ArrayList<>();
+		expected.add(zone1);
+		expected.add(zone2);
+		expected.add(zone3);
+		assertEquals(expected,map.findPath(zone1, zone3));
+	}
+	
+	@Test(expected=NoPathAvailableException.class)
+	public void testFindPathReversePath(){
+		map.findPath(zone5, zone1);
+	}
+	
+	@Test
+	public void testFindPathMoreDestination(){
 		List<UUID> expected = new ArrayList<>();
 		expected.add(zone1);
 		expected.add(zone5);
@@ -78,6 +112,18 @@ public class ZoneMapTest {
 		assertEquals(expected, map.findPath(zone1, destinations));
 	}
 	
+	@Test(expected=NoPathAvailableException.class)
+	public void testFindPathException(){
+		map.findPath(zone1, unconnectedZone);
+		
+	}
+	
+	@Test(expected=NoPathAvailableException.class)
+	public void testFindPathMoreException(){
+		List<UUID> destinations = new ArrayList<>();
+		destinations.add(unconnectedZone);
+		map.findPath(zone1,destinations);
+	}
 	
 
 }

@@ -1,12 +1,9 @@
 package uni.miskolc.ips.ilona.navigation.persist.ontology;
 
-import java.io.File;
-
 public class IlonaIRIs {
 	//
 	//
 	// base IRIs
-	public static final File ILONAFILE = new File("/home/dpkun/practice/OWLAPI/owlTryTwo/resources/ILONA.owl");
 	public static final String ONTOLOGY = new String("http://www.semanticweb.org/dpkun/ontologies/2016/ILONA");
 	public static final String PREFIX = new String("http://www.semanticweb.org/dpkun/ontologies/2016/ILONA#");
 	//

@@ -7,7 +7,8 @@
 				pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
 		</File>
 
-		<File name="DAOLogFile" fileName="logs/ilonaPersistMysql.log" append="true">
+		<File name="DAOLogFile" fileName="logs/ilonaPersistMysql.log"
+			append="true">
 			<PatternLayout
 				pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
 		</File>
@@ -18,15 +19,24 @@
 				pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
 		</File>
 
-		<File name="MODEL_LOG_FILE" fileName="logs/ilonaModel.log" append="true">
+		<File name="MODEL_LOG_FILE" fileName="logs/ilonaModel.log"
+			append="true">
+			<PatternLayout
+				pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
+		</File>
+
+		<File name="PositioningLogFile" fileName="logs/ilonaPositioning.log"
+			append="true">
 			<PatternLayout
 				pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
 		</File>
 		
-			<File name="PositioningLogFile" fileName="logs/ilonaPositioning.log" append="true">
+			<File name="PositioningResultLogFile" fileName="logs/ilonaPositioningResult.log"
+			append="false">
 			<PatternLayout
-				pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
+				pattern="%-5p|%C{2} (%F:%L) - %m%n" />
 		</File>
+		
 
 		<Console name="STDOUT" target="SYSTEM_OUT">
 			<PatternLayout
@@ -54,16 +64,27 @@
 			<AppenderRef ref="ALL_LOGS_FILE" />
 			<AppenderRef ref="MODEL_LOG_FILE" />
 		</Logger>
-		
-			<Logger name="uni.miskolc.ips.ilona.service.impl.positioning.classification.bayes"
+
+		<Logger
+			name="uni.miskolc.ips.ilona.service.impl.positioning.classification.bayes"
 			level="info">
 			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="ALL_LOGS_FILE" />
 			<AppenderRef ref="PositioningLogFile" />
 		</Logger>
-		
-		<Root level= "info" >
-			<AppenderRef ref="ALL_LOGS_FILE" level="error"/>
+
+
+		<Logger
+			name="uni.miskolc.ips.ilona.positioning.service.impl.neuralnetwork"
+			level="info">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="ALL_LOGS_FILE" />
+			<AppenderRef ref="PositioningLogFile" />
+			<AppenderRef ref="PositioningResultLogFile" />
+		</Logger>
+
+		<Root level="info">
+			<AppenderRef ref="ALL_LOGS_FILE" level="error" />
 			<AppenderRef ref="STDOUT" level="warn" />
 		</Root>
 
