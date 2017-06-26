@@ -2,4 +2,4 @@
 This repository is deprecated.
 It has been splitted into the following repositories:
 # ilona-web
-# ilona-measurement
+# https://github.com/ZsoltToth/ilona-measurement
